@@ -157,13 +157,14 @@ axis(limits_)
 %%              Step 2: Run SEDS Solver        %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear options;
+plot_repr = 1;
 options.tol_mat_bias = 10^-6; % A very small positive scalar to avoid
                               % instabilities in Gaussian kernel [default: 10^-1]                             
 options.display = 1;          % An option to control whether the algorithm
                               % displays the output of each iterations [default: true]                            
 options.tol_stopping=10^-9;   % A small positive scalar defining the stoppping
                               % tolerance for the optimization solver [default: 10^-10]
-options.max_iter = 500;      % Maximum number of iteration for the solver [default: i_max=1000]
+options.max_iter = 500;       % Maximum number of iteration for the solver [default: i_max=1000]
 
 
 options.objective = 'mse';    % 'likelihood'
@@ -188,7 +189,19 @@ switch options.objective
         title('SEDS Dynamics with $J(\theta_{\gamma})$= log-Likelihood', 'Interpreter','LaTex','FontSize',20)
 end
 
-
+% Simulate trajectories and plot them on top
+if plot_repr
+    opt_sim = [];
+    opt_sim.dt = 0.01;
+    opt_sim.i_max = 3000;
+    opt_sim.tol = 0.1;
+    opt_sim.plot = 0;
+    % Initial points of demonstrations
+    x0_all = [Xi_ref(1:2,1) Xi_ref(1:2,1)+0.25*randn(2,1) Xi_ref(1:2,1)-0.25*randn(2,1)];
+    [x_seds xd_seds]=Simulation(x0_all ,[],ds_seds, opt_sim);
+    scatter(x_seds(1,:),x_seds(2,:),10,[0 0 0],'filled'); hold on
+end
+%% Plot GMM Parameters after SEDS
 figure('Color', [1 1 1]);
 est_labels =  my_gmm_cluster(Xi_ref, Priors', Mu(1:2,:), Sigma(1:2,1:2,:), 'hard', []);
 plotGMMParameters( Xi_ref, est_labels, Mu(1:2,:), Sigma(1:2,1:2,:),1);
@@ -198,6 +211,27 @@ axis(limits_)
 box on
 grid on
 title('$\theta_{\gamma}=\{\pi_k,\mu^k,\Sigma^k\}$ after SEDS Optimization', 'Interpreter', 'LaTex','FontSize',20)
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%     Plot Choosen Lyapunov Function and derivative  %%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Type of plot
+contour = 1; % 0: surf, 1: contour
+clear lyap_fun_comb lyap_der 
+P = eye(2);
+% Lyapunov function
+lyap_fun = @(x)lyapunov_function_PQLF(x, att_g, P);
+title_string = {'$V(\xi) = (\xi-\xi^*)^T(\xi-\xi^*)$'};
+
+% Derivative of Lyapunov function (gradV*f(x))
+lyap_der = @(x)lyapunov_derivative_PQLF(x, att_g, P, ds_seds);
+title_string_der = {'Lyapunov Function Derivative $\dot{V}(\xi)$'};
+
+if exist('h_lyap','var');     delete(h_lyap);     end
+if exist('h_lyap_der','var'); delete(h_lyap_der); end
+h_lyap     = plot_lyap_fct(lyap_fun, contour, limits,  title_string, 0);
+h_lyap_der = plot_lyap_fct(lyap_der, contour, limits_,  title_string_der, 1);
+
 
 %% Compare Velocities from Demonstration vs DS
 % Simulated velocities of DS converging to target from starting point

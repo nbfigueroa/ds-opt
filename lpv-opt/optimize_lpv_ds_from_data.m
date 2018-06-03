@@ -5,47 +5,61 @@ Xi_ref = Data(1:2,:);
 Xi_ref_dot = Data(3:4,:);
 [N,M] = size(Xi_ref_dot);
 
-% Solve the convex optimization problem with Yalmip
+% Define Optimization Variables
 sdp_options = []; Constraints = [];
 epsilon = 0.001;
+init_cvx = 0;
 
-% Define Variables
+% Define DS Variables
 K = length(gmm.Priors);
 A_c = zeros(N,N,K);
 b_c = zeros(N,K);
 
-% Define solver for type of constraints and Initialization (for NLP)
+% Define solver for type of constraints
 switch ctr_type
     case 0
+        % 'sedumi': semidefinite programming solver for convex problems
         sdp_options = sdpsettings('solver','sedumi','verbose', 1);
     
     case 1
         % 'penlab': Nonlinear semidefinite programming solver
         sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1);
-        % Solve Problem with Convex constraints first to get A's
-        fprintf('Solving Optimization Problem with Convex Constraints for Non-Convex Initialization...\n');
-        [A0, b0] = optimize_lpv_ds_from_data(Data, attractor, 0, gmm);
         P_var = sdpvar(N, N, 'symmetric','real');
         Constraints = [Constraints, P_var >  eye(N,N)];
         assign(P_var,eye(N));
+        init_cvx = 1;
         
     case 2
         % 'penlab': Nonlinear semidefinite programming solver
         sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1);
-        % Solve Problem with Convex constraints first to get A's
-        fprintf('Solving Optimization Problem with Convex Constraints for Non-Convex Initialization...\n');
-        [A0, b0] = optimize_lpv_ds_from_data(Data, attractor, 0, gmm);
         P = varargin{1};
+        init_cvx = 1;
+end
+
+if init_cvx
+    % Solve Problem with Convex constraints first to get A's
+    fprintf('Solving Optimization Problem with Convex Constraints for Non-Convex Initialization...\n');
+    [A0, b0] = optimize_lpv_ds_from_data(Data, attractor, 0, gmm);
 end
 
 % Posterior Probabilities per local model
 h_k = posterior_probs_gmm(Xi_ref,gmm,'norm');
 
+
+% Define Constraints and Assign Initial Values
 for k = 1:K    
     A_vars{k} = sdpvar(N, N, 'full','real');       
     b_vars{k} = sdpvar(N, 1, 'full');
     Q_vars{k} = sdpvar(N, N,'symmetric','real');       
-           
+       
+    % Assign Initial Parameters
+    if init_cvx       
+        assign(A_vars{k},A0(:,:,k));
+        assign(b_vars{k},b0(:,k));        
+    else
+        assign(A_vars{k},-eye(N));
+        assign(b_vars{k},-eye(N)*attractor);
+    end
     
     % Define Constraints
     switch ctr_type
@@ -55,32 +69,19 @@ for k = 1:K
         
         case 1 %: non-convex, unknown P                                                        
             Constraints = [Constraints, transpose(A_vars{k})*P_var + P_var*A_vars{k} <= -epsilon*eye(N)];
-%             Constraints = [Constraints  A_vars{k} <= -epsilon*eye(N,N)];
             Constraints = [Constraints, b_vars{k} == -A_vars{k}*attractor];
             
-            % Assign Initial Parameters
-            assign(A_vars{k},A0(:,:,k));
-            assign(b_vars{k},b0(:,k));
-%          assign(A_vars{k},-eye(N));
-%          assign(b_vars{k},-eye(N)*attractor);   
+
          
         case 2 %: non-convex with given P
                         
-            % Option 1                      
+            % Option 1: Stricter Constraint                      
 %             Constraints = [Constraints, transpose(A_vars{k})*P + P*A_vars{k} <= -epsilon*eye(N)];                        
             
-            % Option 2                      
+            % Option 2: Less Strict and converges faster most of the times                      
             Constraints = [Constraints, transpose(A_vars{k})*P + P*A_vars{k} == Q_vars{k}];                        
             Constraints = [Constraints, Q_vars{k} <= -epsilon*eye(N)];                        
-            Constraints = [Constraints, b_vars{k} == -A_vars{k}*attractor];
-            
-            % Assign Initial Parameters
-            assign(A_vars{k},A0(:,:,k));
-            assign(b_vars{k},b0(:,k));
-            
-%             assign(A_vars{k},-eye(N));
-%             assign(b_vars{k},-eye(N)*attractor);   
-                     
+            Constraints = [Constraints, b_vars{k} == -A_vars{k}*attractor];                                 
             assign(Q_vars{k},-eye(N));
             
     end

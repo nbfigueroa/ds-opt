@@ -133,7 +133,7 @@ P_opt = Vxf.P(:,:,1);
 
 %%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%
 % Type of constraints/optimization 
-constr_type = 0;      % 0:'convex':     A' + A < 0
+constr_type = 2;      % 0:'convex':     A' + A < 0
                       % 1:'non-convex': A'P + PA < 0
                       % 2:'non-convex': A'P + PA < -Q given P                                  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,6 +158,21 @@ grid on
 title('GMM LPV-DS $\dot{\xi}=\sum_{k=1}^K\gamma^k(\xi)(A_k\xi + b_k)$', 'Interpreter','LaTex','FontSize',20)
 xlabel('$\xi_1$','Interpreter','LaTex','FontSize',20);
 ylabel('$\xi_2$','Interpreter','LaTex','FontSize',20);
+
+% Simulate trajectories and plot them on top
+plot_repr = 1;
+if plot_repr
+    opt_sim = [];
+    opt_sim.dt = 0.01;
+    opt_sim.i_max = 3000;
+    opt_sim.tol = 0.1;
+    opt_sim.plot = 0;
+    % Initial points of demonstrations
+    x0_all = [Xi_ref(1:2,1) Xi_ref(1:2,1)+0.25*randn(2,1) Xi_ref(1:2,1)-0.25*randn(2,1)];
+    [x_seds xd_seds]=Simulation(x0_all ,[],ds_lpv, opt_sim);
+    scatter(x_seds(1,:),x_seds(2,:),10,[0 0 0],'filled'); hold on
+end
+
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%     Plot Choosen Lyapunov Function and derivative  %%
