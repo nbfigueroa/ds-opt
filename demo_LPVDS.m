@@ -50,7 +50,7 @@ att_g = [0 0]';
 
 sample = 2;
 Data = [];
-for l=1:2   
+for l=1:3   
     % Check where demos end and shift    
     data_pos_raw = demos{l}.pos(:,1:sample:end); 
     data_filt    = sgolay_time_derivatives(data_pos_raw', demos{l}.dt, 2, 3, 15);
@@ -83,12 +83,12 @@ est_options.do_plots   = 1;   % Plot Estimation Statistics
 est_options.adjusts_C  = 0;   % Adjust Sigmas
 
 % Discover Local Models
-sample = 3;
+sample = 2;
 [Priors0, Mu0, Sigma0] = discover_local_models(Xi_ref(:,1:sample:end), Xi_dot_ref(:,1:sample:end), est_options);
 
-%% Extract Cluster Labels
+% Extract Cluster Labels
 est_K      = length(Priors0); 
-Priors = Priors0; Mu = Mu0; Sigma = Sigma0
+Priors = Priors0; Mu = Mu0; Sigma = Sigma0;
 est_labels =  my_gmm_cluster(Xi_ref, Priors, Mu, Sigma, 'hard', []);
 
 % Visualize Cluster Parameters on Manifold Data
@@ -125,51 +125,23 @@ end
 %% %%%%%%%%  Step 2: ESTIMATE CANDIDATE LYAPUNOV FUNCTION PARAMETERS  %%%%%%%%%
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [Vxf] = learn_wsaqf(Data, att_g);
-P_g = Vxf.P(:,:,1);
+P_opt = Vxf.P(:,:,1);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%  Step 3: ESTIMATE SYSTEM DYNAMICS MATRICES  %%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%% DS PARAMETER INITIALIZATION %%%%%%%%%%%%%%%
-% Type of constraints to estimate Axi+b or LPV
-constr_type = 2;      % 0:'convex':     A' + A < 0
+%%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%
+% Type of constraints/optimization 
+constr_type = 0;      % 0:'convex':     A' + A < 0
                       % 1:'non-convex': A'P + PA < 0
-                      % 2:'non-convex': A'P + PA < -Q given P              
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                      % 2:'non-convex': A'P + PA < -Q given P                                  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%  LPV system sum_{k=1}^{K}h_k(xi)(A_kxi + b_k) %%%%%%%%            
-[A_g, b_g, P_est] = optimize_lpv_ds_from_data(Data, att_g, constr_type, ds_gmm, P_g);
-if constr_type == 1
-    P_g = P_est;
-end
-        
-%%%% FOR DEBUGGING: Check Negative-Definite Constraint %%%%
-if constr_type == 0
-    constr_violations = zeros(1,est_K);
-    for k=1:est_K
-        A_t = A_g(:,:,k) + A_g(:,:,k)';
-        constr_violations(1,k) = sum(eig(A_t) > 0); % sufficient
-    end
-    % Check Constraint Violation
-    if sum(constr_violations) > 0
-        warning(sprintf('Strict System Matrix Constraints are NOT met..'))
-    else
-        fprintf('All Sufficient System Matrix Constraints are met..\n')
-    end
-else
-    suff_constr_violations = zeros(1,est_K);
-    for k=1:est_K
-        Pg_A =  A_g(:,:,k)'*P_g + P_g*A_g(:,:,k);
-        suff_constr_violations(1,k) = sum(eig(Pg_A + Pg_A') > 0); % strict
-    end
-    % Check Constraint Violation
-    if sum(suff_constr_violations) > 0
-        warning(sprintf('Sufficient System Matrix Constraints are NOT met..'))
-    else
-        fprintf('All Sufficient System Matrix Constraints are met..\n')
-    end
-end
+%%%%%%%%  LPV system sum_{k=1}^{K}\gamma_k(xi)(A_kxi + b_k) %%%%%%%%            
+[A_g, b_g, P_est] = optimize_lpv_ds_from_data(Data, att_g, constr_type, ds_gmm, P_opt);
+
+
 %% %%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
 % Create DS function handle
 ds_lpv = @(x) lpv_ds(x, ds_gmm, A_g, b_g);
@@ -188,23 +160,32 @@ xlabel('$\xi_1$','Interpreter','LaTex','FontSize',20);
 ylabel('$\xi_2$','Interpreter','LaTex','FontSize',20);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Plot WSAQF Lyapunov Function and derivative -- NEW
+%%     Plot Choosen Lyapunov Function and derivative  %%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Type of plot
-contour = 0; % 0: surf, 1: contour
+contour = 1; % 0: surf, 1: contour
 clear lyap_fun_comb lyap_der 
 
+switch constr_type
+    case 0 
+        P = eye(2);
+    case 1
+        P = P_est;
+    case 2
+        P = P_opt;
+end
+
 % Lyapunov function
-lyap_fun_comb = @(x)lyapunov_function_combined(x, att_g, [], 1, P_g, zeros(2,2), ds_gmm);
-title_string = {'$V(\xi) = (\xi-\xi_g^*)^TP_g(\xi-\xi_g^*)$'};
+lyap_fun = @(x)lyapunov_function_PQLF(x, att_g, P);
+title_string = {'$V(\xi) = (\xi-\xi^*)^TP(\xi-\xi^*)$'};
 
 % Derivative of Lyapunov function (gradV*f(x))
-lyap_der = @(x)lyapunov_combined_derivative(x, att_g, [], ds_lpv, 1, P_g, zeros(2,2));
-title_string_der = {'Lyapunov Function Derivative $\dot{V}_{g}(\xi)$'};
+lyap_der = @(x)lyapunov_derivative_PQLF(x, att_g, P, ds_lpv);
+title_string_der = {'Lyapunov Function Derivative $\dot{V}(\xi)$'};
 
 if exist('h_lyap','var');     delete(h_lyap);     end
 if exist('h_lyap_der','var'); delete(h_lyap_der); end
-h_lyap     = plot_lyap_fct(lyap_fun_comb, contour, limits,  title_string, 0);
+h_lyap     = plot_lyap_fct(lyap_fun, contour, limits,  title_string, 0);
 h_lyap_der = plot_lyap_fct(lyap_der, contour, limits_,  title_string_der, 1);
 
 %% Compare Velocities from Demonstration vs DS

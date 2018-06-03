@@ -144,7 +144,7 @@ switch init_type
         title_string = 'GMM Parameters Initialized with Phys-GMM';    
 end
  
-%% Plot Initial Estimate 
+% Plot Initial Estimate 
 figure('Color', [1 1 1]);
 est_labels =  my_gmm_cluster(Xi_ref, Priors_0, Mu_0(1:2,:), Sigma_0(1:2,1:2,:), 'hard', []);
 plotGMMParameters( Xi_ref, est_labels, Mu_0(1:2,:), Sigma_0(1:2,1:2,:),1);
@@ -193,8 +193,8 @@ figure('Color', [1 1 1]);
 est_labels =  my_gmm_cluster(Xi_ref, Priors', Mu(1:2,:), Sigma(1:2,1:2,:), 'hard', []);
 plotGMMParameters( Xi_ref, est_labels, Mu(1:2,:), Sigma(1:2,1:2,:),1);
 scatter(Xi_ref(1,:),Xi_ref(2,:),10,[1 0 0],'filled'); hold on
-% limits_ = limits + [-0.015 0.015 -0.015 0.015];
-% axis(limits_)
+limits_ = limits + [-0.015 0.015 -0.015 0.015];
+axis(limits_)
 box on
 grid on
 title('$\theta_{\gamma}=\{\pi_k,\mu^k,\Sigma^k\}$ after SEDS Optimization', 'Interpreter', 'LaTex','FontSize',20)

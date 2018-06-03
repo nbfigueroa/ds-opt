@@ -67,11 +67,11 @@ for k = 1:K
         case 2 %: non-convex with given P
                         
             % Option 1                      
-            Constraints = [Constraints, transpose(A_vars{k})*P + P*A_vars{k} <= -epsilon*eye(N)];                        
+%             Constraints = [Constraints, transpose(A_vars{k})*P + P*A_vars{k} <= -epsilon*eye(N)];                        
             
             % Option 2                      
-%             Constraints = [Constraints, transpose(A_vars{k})*P + P*A_vars{k} == Q_vars{k}];                        
-%             Constraints = [Constraints, Q_vars{k} <= -epsilon*eye(N)];                        
+            Constraints = [Constraints, transpose(A_vars{k})*P + P*A_vars{k} == Q_vars{k}];                        
+            Constraints = [Constraints, Q_vars{k} <= -epsilon*eye(N)];                        
             Constraints = [Constraints, b_vars{k} == -A_vars{k}*attractor];
             
             % Assign Initial Parameters
@@ -127,14 +127,43 @@ for k = 1:K
     b_c(:,k)   = value(b_vars{k});
 end
 
-if exist('P_var','var')
-    P = value(P_var);
-else
-    P = eye(N);
+switch ctr_type 
+    case 0 
+        P = eye(N);
+    case 1
+        P = value(P_var);
 end
 
 sol.info
 check(Constraints)
 fprintf('Total error: %2.2f\nComputation Time: %2.2f\n', value(Objective),sol.solvertime);
+
+
+%%%% FOR DEBUGGING: Check Negative-Definite Constraint %%%%
+if ctr_type == 0
+    constr_violations = zeros(1,K);
+    for k=1:K
+        A_t = A_c(:,:,k) + A_c(:,:,k)';
+        constr_violations(1,k) = sum(eig(A_t) > 0); % sufficient
+    end
+    % Check Constraint Violation
+    if sum(constr_violations) > 0
+        warning(sprintf('Strict System Matrix Constraints are NOT met..'))
+    else
+        fprintf('All Sufficient System Matrix Constraints are met..\n')
+    end
+else
+    suff_constr_violations = zeros(1,K);
+    for k=1:K
+        Pg_A =  A_c(:,:,k)'*P + P*A_c(:,:,k);
+        suff_constr_violations(1,k) = sum(eig(Pg_A + Pg_A') > 0); % strict
+    end
+    % Check Constraint Violation
+    if sum(suff_constr_violations) > 0
+        warning(sprintf('Sufficient System Matrix Constraints are NOT met..'))
+    else
+        fprintf('All Sufficient System Matrix Constraints are met..\n')
+    end
+end
 
 end

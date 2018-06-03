@@ -32,8 +32,10 @@ switch est_type
                 % Compute Position component
                 xi_i = Xi_ref(:,i);
                 xi_j = Xi_ref(:,j);
-                p = exp(-norm(xi_i - xi_j));
-                p = 1;
+                % LASA DATASET
+                p = exp(-0.001*norm(xi_i - xi_j));
+                % GUI DATASET
+                p = exp(-1*norm(xi_i - xi_j));
                 
                 % Shifted Cosine Similarity of velocity vectors
                 S(i,j) = p*s;
