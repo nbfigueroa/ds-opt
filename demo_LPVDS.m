@@ -77,7 +77,7 @@ Xi_dot_ref = Data(3:end,:);
 % 3: CRP-GMM via Collapsed Gibbs Sampler
 
 est_options = [];
-est_options.type       = 1;   % GMM Estimation Alorithm Type    
+est_options.type       = 0;   % GMM Estimation Alorithm Type    
 est_options.maxK       = 10;  % Maximum Gaussians for Type 1/2
 est_options.do_plots   = 1;   % Plot Estimation Statistics
 est_options.adjusts_C  = 0;   % Adjust Sigmas
@@ -88,10 +88,7 @@ sample = 3;
 
 %% Extract Cluster Labels
 est_K      = length(Priors0); 
-Priors = Priors0; Mu = Mu0; Sigma = Sigma0;
-
-% Use init from SEDS
-% Priors = Priors_0; Mu = Mu_0(1:2,:); Sigma = Sigma_0(1:2,1:2,:);
+Priors = Priors0; Mu = Mu0; Sigma = Sigma0
 est_labels =  my_gmm_cluster(Xi_ref, Priors, Mu, Sigma, 'hard', []);
 
 % Visualize Cluster Parameters on Manifold Data
@@ -136,7 +133,7 @@ P_g = Vxf.P(:,:,1);
 
 %%%%%%%%%%%%%%%%%%% DS PARAMETER INITIALIZATION %%%%%%%%%%%%%%%
 % Type of constraints to estimate Axi+b or LPV
-constr_type = 0;      % 0:'convex':     A' + A < 0
+constr_type = 2;      % 0:'convex':     A' + A < 0
                       % 1:'non-convex': A'P + PA < 0
                       % 2:'non-convex': A'P + PA < -Q given P              
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -186,23 +183,10 @@ limits_ = limits + [-0.015 0.015 -0.015 0.015];
 axis(limits_)
 box on
 grid on
-title('GMM LPV-DS $\dot{\xi}=\sum_{k=1}^K\gamma^k(\xi)(A_k(\xi) + b_k)$', 'Interpreter','LaTex','FontSize',20)
+title('GMM LPV-DS $\dot{\xi}=\sum_{k=1}^K\gamma^k(\xi)(A_k\xi + b_k)$', 'Interpreter','LaTex','FontSize',20)
 xlabel('$\xi_1$','Interpreter','LaTex','FontSize',20);
 ylabel('$\xi_2$','Interpreter','LaTex','FontSize',20);
 
-%% Simulate Passive DS Controller function
-if with_robot
-    struct_stiff = [];
-    struct_stiff.DS_type = 'global'; % Options: SEDS, Global-LPV, LAGS, LMDS ?
-    struct_stiff.gmm = ds_gmm;
-    struct_stiff.A_g = A_g;
-    struct_stiff.basis = 'D'; % Options: D (using the same basis as D) or I (using the world basis)
-    
-    if with_robot
-        dt = 0.01;
-        simulate_passiveDS(fig1, robot, base, ds_lags_multi, att_g, dt,struct_stiff);
-    end
-end
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot WSAQF Lyapunov Function and derivative -- NEW
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -228,7 +212,7 @@ h_lyap_der = plot_lyap_fct(lyap_der, contour, limits_,  title_string_der, 1);
 xd_dot = []; xd = [];
 % Simulate velocities from same reference trajectory
 for i=1:length(Data)
-    xd_dot_ = ds_lags_multi(Data(1:2,i));    
+    xd_dot_ = ds_lpv(Data(1:2,i));    
     % Record Trajectories
     xd_dot = [xd_dot xd_dot_];        
 end
