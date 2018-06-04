@@ -27,13 +27,13 @@ switch ctr_type
         P_var = sdpvar(N, N, 'symmetric','real');
         Constraints = [Constraints, P_var >  eye(N,N)];
         assign(P_var,eye(N));
-        init_cvx = 1;
+        init_cvx = varargin{2};
         
     case 2
         % 'penlab': Nonlinear semidefinite programming solver
         sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1);
         P = varargin{1};
-        init_cvx = 1;
+        init_cvx = varargin{2};
 end
 
 if init_cvx

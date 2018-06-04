@@ -49,8 +49,8 @@ radius_fun = @(x)(1 - my_exp_loc_act(5, att_g, x));
 att_g = [0 0]';
 
 sample = 2;
-Data = [];
-for l=1:2   
+Data = []; x0_all = [];
+for l=1:3   
     % Check where demos end and shift    
     data_pos_raw = demos{l}.pos(:,1:sample:end); 
     data_filt    = sgolay_time_derivatives(data_pos_raw', demos{l}.dt, 2, 3, 15);
@@ -60,6 +60,7 @@ for l=1:2
         data_(3:4,end) = zeros(2,1);
     end    
     Data = [Data data_];
+    x0_all = [x0_all data_(1:2,20)];
     clear data_
 end
 
@@ -91,10 +92,11 @@ switch init_type
             est_options.type       = 1;   % GMM Estimation Alorithm Type
             est_options.maxK       = 10;  % Maximum Gaussians for Type 1/2
             est_options.do_plots   = 1;   % Plot Estimation Statistics
+            est_options.fixed_K    = [];   % Fix K and estimate with EM
             
             % Discover Local Models
             sample = 1;
-            [Priors0, Mu0, Sigma0] = discover_local_models(Xi_ref(:,1:sample:end), Xi_dot_ref(:,1:sample:end), est_options);
+            [Priors0, Mu0, Sigma0] = discover_local_models([Xi_ref(:,1:sample:end); Xi_dot_ref(:,1:sample:end)], Xi_dot_ref(:,1:sample:end), est_options);
             nb_gaussians = length(Priors0);
         else
             % Select manually the number of Gaussian components
@@ -196,8 +198,6 @@ if plot_repr
     opt_sim.i_max = 3000;
     opt_sim.tol = 0.1;
     opt_sim.plot = 0;
-    % Initial points of demonstrations
-    x0_all = [Xi_ref(1:2,1) Xi_ref(1:2,1)+0.25*randn(2,1) Xi_ref(1:2,1)-0.25*randn(2,1)];
     [x_seds xd_seds]=Simulation(x0_all ,[],ds_seds, opt_sim);
     scatter(x_seds(1,:),x_seds(2,:),10,[0 0 0],'filled'); hold on
 end

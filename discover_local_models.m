@@ -4,6 +4,11 @@ function [Priors, Mu, Sigma] = discover_local_models(Xi_ref, Xi_dot_ref, est_opt
 est_type       = est_options.type;
 max_gaussians  = est_options.maxK;
 do_plots       = est_options.do_plots;
+if isempty(est_options.fixed_K)
+    fixed_K        = 0;
+else
+    fixed_K = est_options.fixed_K;
+end
 [M N] = size(Xi_ref);
 
 switch est_type
@@ -34,8 +39,9 @@ switch est_type
                 xi_j = Xi_ref(:,j);
                 % LASA DATASET
                 p = exp(-0.001*norm(xi_i - xi_j));
+                p = 1; 
                 % GUI DATASET
-                p = exp(-1*norm(xi_i - xi_j));
+%                 p = exp(-1*norm(xi_i - xi_j));
                 
                 % Shifted Cosine Similarity of velocity vectors
                 S(i,j) = p*s;
@@ -100,9 +106,12 @@ switch est_type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%% Option2: Cluster Trajectories with GMM-EM + BIC Model Selection %%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        em_type = 'matlab'; repetitions = 10;
-        [bic_scores, k] = fit_gmm_bic([Xi_ref],max_gaussians, repetitions, em_type, do_plots);
-        
+        if fixed_K == 0
+            em_type = 'matlab'; repetitions = 10;
+            [bic_scores, k] = fit_gmm_bic([Xi_ref],max_gaussians, repetitions, em_type, do_plots);
+        else
+            k = fixed_K;
+        end
         % Train GMM with Optimal k
         warning('off', 'all'); % there are a lot of really annoying warnings when fitting GMMs
         GMM_full = fitgmdist([Xi_ref]', k, 'Start', 'plus', 'CovarianceType','full', 'Regularize', .000001, 'Replicates', 10); %fit a GMM to our data

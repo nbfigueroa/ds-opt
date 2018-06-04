@@ -23,7 +23,7 @@ scatter(att_g(1),att_g(2),100,[0 0 0],'d'); hold on;
 
 % Draw Reference Trajectories
 data = draw_mouse_data_on_DS(fig1, limits);
-Data = [];
+Data = []; x0_all = [];
 for l=1:length(data)    
     % Check where demos end and shift
     data_ = data{l};
@@ -32,6 +32,7 @@ for l=1:length(data)
         data_(3:4,end) = zeros(2,1);
     end    
     Data = [Data data_];
+    x0_all = [x0_all data_(1:2,1)];
 end
 
 % Position/Velocity Trajectories
@@ -48,8 +49,8 @@ Xi_dot_ref = Data(3:end,:);
 radius_fun = @(x)(1 - my_exp_loc_act(5, att_g, x));
 att_g = [0 0]';
 
-sample = 2;
-Data = [];
+sample = 5;
+Data = []; x0_all = [];
 for l=1:3   
     % Check where demos end and shift    
     data_pos_raw = demos{l}.pos(:,1:sample:end); 
@@ -60,6 +61,7 @@ for l=1:3
         data_(3:4,end) = zeros(2,1);
     end    
     Data = [Data data_];
+    x0_all = [x0_all data_(1:2,20)];
     clear data_
 end
 
@@ -80,7 +82,8 @@ est_options = [];
 est_options.type       = 0;   % GMM Estimation Alorithm Type    
 est_options.maxK       = 10;  % Maximum Gaussians for Type 1/2
 est_options.do_plots   = 1;   % Plot Estimation Statistics
-est_options.adjusts_C  = 0;   % Adjust Sigmas
+est_options.adjusts_C  = 1;   % Adjust Sigmas
+est_options.fixed_K    = 3;   % Fix K and estimate with EM
 
 % Discover Local Models
 sample = 2;
@@ -104,14 +107,15 @@ switch est_options.type
         title('Standard Non-Parametric Mixture Model','Interpreter','LaTex', 'FontSize',15);
 end
 
-%%%% Visualize GMM pdf from learnt parameters (for 1D Datasets)
+%%% Visualize GMM pdf from learnt parameters (for 1D Datasets)
 ml_plot_gmm_pdf(Xi_ref, Priors, Mu, Sigma)
 clear ds_gmm; ds_gmm.Mu = Mu; ds_gmm.Sigma = Sigma; 
 ds_gmm.Priors = Priors; 
 
 % Adjust Covariance Matrices
+est_options.adjusts_C  = 1;
 if est_options.adjusts_C  == 1
-    tot_scale_fact = 1; rel_scale_fact = 0.15;
+    tot_scale_fact = 1; rel_scale_fact = 0.25;
     Sigma = adjust_Covariances(Sigma0, tot_scale_fact, rel_scale_fact);
     ds_gmm.Sigma;
     % Visualize Cluster Parameters on Manifold Data
@@ -119,6 +123,7 @@ if est_options.adjusts_C  == 1
     ml_plot_gmm_pdf(Xi_ref, Priors, Mu, Sigma)  
     limits_ = limits + [-0.015 0.015 -0.015 0.015];
     axis(limits_)
+    title('GOOD Gaussian Mixture Model','Interpreter','LaTex', 'FontSize',15);
 end    
    
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -136,11 +141,11 @@ P_opt = Vxf.P(:,:,1);
 constr_type = 2;      % 0:'convex':     A' + A < 0
                       % 1:'non-convex': A'P + PA < 0
                       % 2:'non-convex': A'P + PA < -Q given P                                  
+init_cvx    = 1;      % 0/1: initialize non-cvx problem with cvx                
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%  LPV system sum_{k=1}^{K}\gamma_k(xi)(A_kxi + b_k) %%%%%%%%            
-[A_g, b_g, P_est] = optimize_lpv_ds_from_data(Data, att_g, constr_type, ds_gmm, P_opt);
-
+[A_g, b_g, P_est] = optimize_lpv_ds_from_data(Data, att_g, constr_type, ds_gmm, P_opt, init_cvx);
 
 %% %%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
 % Create DS function handle
@@ -167,10 +172,9 @@ if plot_repr
     opt_sim.i_max = 3000;
     opt_sim.tol = 0.1;
     opt_sim.plot = 0;
-    % Initial points of demonstrations
-    x0_all = [Xi_ref(1:2,1) Xi_ref(1:2,1)+0.25*randn(2,1) Xi_ref(1:2,1)-0.25*randn(2,1)];
     [x_seds xd_seds]=Simulation(x0_all ,[],ds_lpv, opt_sim);
-    scatter(x_seds(1,:),x_seds(2,:),10,[0 0 0],'filled'); hold on
+    if exist('hr','var');     delete(hr);    end
+    [hr] = scatter(x_seds(1,:),x_seds(2,:),10,[0 0 0],'filled'); hold on
 end
 
 
