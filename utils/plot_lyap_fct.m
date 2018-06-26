@@ -30,14 +30,15 @@ switch min_max
         if contour
             minimum_vdot = 0;
         end
-        hold on; scatter3(x(1,min_id_vdot),x(2,min_id_vdot),minimum_vdot,50,[1 1 1],'filled');
+        hold on; scatter3(x(1,min_id_vdot),x(2,min_id_vdot),minimum_vdot,100,[1 1 0],'filled');
     case 1
         [maximum_vdot, max_id_vdot]  = max(z_tmp(:));
         if contour
             maximum_vdot = 0;
         end
-        hold on; scatter3(x(1,max_id_vdot),x(2,max_id_vdot),maximum_vdot,50,[1 1 1],'filled');
+        hold on; scatter3(x(1,max_id_vdot),x(2,max_id_vdot),maximum_vdot,100,[1 1 0],'filled');
 end
+hold on;
 title(title_string, 'Interpreter','LaTex','FontSize', 18);
 
 end

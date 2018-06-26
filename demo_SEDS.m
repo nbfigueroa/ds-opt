@@ -42,23 +42,17 @@ Xi_dot_ref = Data(3:end,:);
 %%  DATA LOADING OPTION 2: Choose from LASA DATASET %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Choose DS LASA Dataset to load
+clear all; close all; clc
 [demos, limits] = load_LASA_dataset();
 
 % Global Attractor of DS
-radius_fun = @(x)(1 - my_exp_loc_act(5, att_g, x));
 att_g = [0 0]';
 
 sample = 2;
 Data = []; x0_all = [];
 for l=1:3   
     % Check where demos end and shift    
-    data_pos_raw = demos{l}.pos(:,1:sample:end); 
-    data_filt    = sgolay_time_derivatives(data_pos_raw', demos{l}.dt, 2, 3, 15);
-    data_ = [data_filt(:,:,1), data_filt(:,:,2)]';
-    if radius_fun(data_(1:2,end)) > 0.75
-        data_(1:2,:) = data_(1:2,:) - repmat(data_(1:2,end), [1 length(data_)]);
-        data_(3:4,end) = zeros(2,1);
-    end    
+    data_ = [demos{l}.pos(:,1:sample:end); demos{l}.vel(:,1:sample:end);];    
     Data = [Data data_];
     x0_all = [x0_all data_(1:2,20)];
     clear data_
@@ -67,6 +61,7 @@ end
 % Position/Velocity Trajectories
 Xi_ref     = Data(1:2,:);
 Xi_dot_ref = Data(3:end,:);
+
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%              Step 1: Fit GMM to Trajectory Data        %%%%%
@@ -89,10 +84,11 @@ switch init_type
     case 'seds-init'
         if do_ms_bic
             est_options = [];
-            est_options.type       = 1;   % GMM Estimation Alorithm Type
-            est_options.maxK       = 10;  % Maximum Gaussians for Type 1/2
-            est_options.do_plots   = 1;   % Plot Estimation Statistics
-            est_options.fixed_K    = [];   % Fix K and estimate with EM
+            est_options.type        = 1;   % GMM Estimation Alorithm Type
+            est_options.maxK        = 15;  % Maximum Gaussians for Type 1/2
+            est_options.do_plots    = 1;   % Plot Estimation Statistics
+            est_options.fixed_K     = [];   % Fix K and estimate with EM
+            est_options.exp_scaling = [];
             
             % Discover Local Models
             sample = 1;
@@ -100,9 +96,11 @@ switch init_type
             nb_gaussians = length(Priors0);
         else
             % Select manually the number of Gaussian components
-            nb_gaussians = 4;
+            nb_gaussians = 5;
         end
-        [Priors_0, Mu_0, Sigma_0] = initialize_SEDS([Xi_ref(:,1:sample:end); Xi_dot_ref(:,1:sample:end)],nb_gaussians); %finding an initial guess for GMM's parameter
+        
+        %finding an initial guess for GMM's parameter
+        [Priors_0, Mu_0, Sigma_0] = initialize_SEDS([Xi_ref(:,1:sample:end); Xi_dot_ref(:,1:sample:end)],nb_gaussians); 
         title_string = '$\theta_{\gamma}=\{\pi_k,\mu^k,\Sigma^k\}$ Initial Estimate';    
         
     case 'phys-gmm'
@@ -148,32 +146,33 @@ end
  
 % Plot Initial Estimate 
 figure('Color', [1 1 1]);
-est_labels =  my_gmm_cluster(Xi_ref, Priors_0, Mu_0(1:2,:), Sigma_0(1:2,1:2,:), 'hard', []);
+[~, est_labels] =  my_gmm_cluster(Xi_ref, Priors_0, Mu_0(1:2,:), Sigma_0(1:2,1:2,:), 'hard', []);
 plotGMMParameters( Xi_ref, est_labels, Mu_0(1:2,:), Sigma_0(1:2,1:2,:),1);
 title(title_string, 'Interpreter', 'LaTex', 'FontSize',20)
 limits_ = limits + [-0.015 0.015 -0.015 0.015];
 axis(limits_)
+
+ml_plot_gmm_pdf(Xi_ref, Priors0, Mu0(1:2,:), Sigma0(1:2,1:2,:), limits)
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%              Step 2: Run SEDS Solver        %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear options;
-plot_repr = 1;
 options.tol_mat_bias = 10^-6; % A very small positive scalar to avoid
                               % instabilities in Gaussian kernel [default: 10^-1]                             
 options.display = 1;          % An option to control whether the algorithm
                               % displays the output of each iterations [default: true]                            
 options.tol_stopping=10^-9;   % A small positive scalar defining the stoppping
                               % tolerance for the optimization solver [default: 10^-10]
-options.max_iter = 500;       % Maximum number of iteration for the solver [default: i_max=1000]
+options.max_iter = 1000;       % Maximum number of iteration forthe solver [default: i_max=1000]
 
 
 options.objective = 'mse';    % 'likelihood'
 [Priors Mu Sigma]= SEDS_Solver(Priors_0,Mu_0,Sigma_0,[Xi_ref(:,1:sample:end); Xi_dot_ref(:,1:sample:end)],options); %running SEDS optimization solver
 ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x,1:2,3:4);
 
-% Plot SEDS model
+%% Plot SEDS model
 fig3 = figure('Color',[1 1 1]);
 scatter(att_g(1,1),att_g(2,1),50,[0 0 0],'filled'); hold on
 scatter(Xi_ref(1,:),Xi_ref(2,:),10,[1 0 0],'filled'); hold on
@@ -192,6 +191,7 @@ switch options.objective
 end
 
 % Simulate trajectories and plot them on top
+plot_repr = 1;
 if plot_repr
     opt_sim = [];
     opt_sim.dt = 0.01;
@@ -201,17 +201,40 @@ if plot_repr
     [x_seds xd_seds]=Simulation(x0_all ,[],ds_seds, opt_sim);
     scatter(x_seds(1,:),x_seds(2,:),10,[0 0 0],'filled'); hold on
 end
+
+
+% Compute RMSE on training data
+rmse = mean(rmse_error(ds_seds, Xi_ref, Xi_dot_ref));
+fprintf('SEDS got prediction RMSE on training set: %d \n', rmse);
+
+% Compute e_dot on training data
+edot = mean(edot_error(ds_seds, Xi_ref, Xi_dot_ref));
+fprintf('SEDS got prediction e_dot on training set: %d \n', edot);
+
+% Compute DTWD between train trajectories and reproductions
+nb_traj       = size(x_seds,3);
+ref_traj_leng = size(Xi_ref,2)/nb_traj;
+dtwd = zeros(1,nb_traj);
+for n=1:nb_traj
+    start_id = 1+(n-1)*ref_traj_leng;
+    end_id   = n*ref_traj_leng;
+   dtwd(1,n) = dtw(x_seds(:,:,n)',Xi_ref(:,start_id:end_id)');
+end
+
+fprintf('SEDS got reproduction DTWD on training set: %2.4f +/- %2.4f \n', mean(dtwd),std(dtwd));
+
 %% Plot GMM Parameters after SEDS
 figure('Color', [1 1 1]);
 est_labels =  my_gmm_cluster(Xi_ref, Priors', Mu(1:2,:), Sigma(1:2,1:2,:), 'hard', []);
-plotGMMParameters( Xi_ref, est_labels, Mu(1:2,:), Sigma(1:2,1:2,:),1);
 scatter(Xi_ref(1,:),Xi_ref(2,:),10,[1 0 0],'filled'); hold on
+plotGMMParameters( Xi_ref, est_labels, Mu(1:2,:), Sigma(1:2,1:2,:),1);
 limits_ = limits + [-0.015 0.015 -0.015 0.015];
 axis(limits_)
 box on
 grid on
 title('$\theta_{\gamma}=\{\pi_k,\mu^k,\Sigma^k\}$ after SEDS Optimization', 'Interpreter', 'LaTex','FontSize',20)
-
+%%
+ml_plot_gmm_pdf(Xi_ref, Priors', Mu(1:2,:), Sigma(1:2,1:2,:), limits)
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%     Plot Choosen Lyapunov Function and derivative  %%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

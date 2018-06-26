@@ -45,7 +45,6 @@ end
 % Posterior Probabilities per local model
 h_k = posterior_probs_gmm(Xi_ref,gmm,'norm');
 
-
 % Define Constraints and Assign Initial Values
 for k = 1:K    
     A_vars{k} = sdpvar(N, N, 'full','real');       
@@ -67,16 +66,12 @@ for k = 1:K
             Constraints = [Constraints transpose(A_vars{k}) + A_vars{k} <= -epsilon*eye(N,N)]; 
             Constraints = [Constraints b_vars{k} == -A_vars{k}*attractor];
         
-        case 1 %: non-convex, unknown P                                                        
-            Constraints = [Constraints, transpose(A_vars{k})*P_var + P_var*A_vars{k} <= -epsilon*eye(N)];
-            Constraints = [Constraints, b_vars{k} == -A_vars{k}*attractor];
-            
+        case 1 %: non-convex, unknown P            
+            Constraints = [Constraints, transpose(A_vars{k})*P_var + P_var*A_vars{k} <= -epsilon*eye(N)];           
+%             Constraints = [Constraints, b_vars{k} == -A_vars{k}*attractor];            
 
          
         case 2 %: non-convex with given P
-                        
-            % Option 1: Stricter Constraint                      
-%             Constraints = [Constraints, transpose(A_vars{k})*P + P*A_vars{k} <= -epsilon*eye(N)];                        
             
             % Option 2: Less Strict and converges faster most of the times                      
             Constraints = [Constraints, transpose(A_vars{k})*P + P*A_vars{k} == Q_vars{k}];                        
@@ -91,7 +86,11 @@ end
 Xi_d_dot_c_raw = sdpvar(N,M,K, 'full');%zeros(size(Qd));
 for k = 1:K
     h_K = repmat(h_k(k,:),[N 1]);
-    f_k = A_vars{k}*Xi_ref + repmat(b_vars{k},[1 M]);
+    if ctr_type == 1
+        f_k = A_vars{k}*Xi_ref;     
+    else
+        f_k = A_vars{k}*Xi_ref + repmat(b_vars{k},[1 M]);
+    end
     Xi_d_dot_c_raw(:,:,k) = h_K.*f_k;
 end
 
@@ -133,6 +132,7 @@ switch ctr_type
         P = eye(N);
     case 1
         P = value(P_var);
+        b_g = zeros(2,K);
 end
 
 sol.info
@@ -168,3 +168,13 @@ else
 end
 
 end
+
+%%%%% Using Sina's Code for (O1)
+% p = ds_gmm.Priors;
+% m = ds_gmm.Mu;
+% s = ds_gmm.Sigma;
+% [~,~,~,Stable.A,time_CON, P_est]=Learn_The_convex_Stable_problem(p, m, s, Data);
+% 
+% % The out-pout is 
+% A_g = Stable.A;
+% b_g = zeros(2,est_K);
