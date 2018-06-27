@@ -21,14 +21,20 @@ names = {'Angle','BendedLine','CShape','DoubleBendedLine','GShape',...
          'heee','JShape','JShape_2','Khamesh','Leaf_1',...
          'Leaf_2','Line','LShape','NShape','PShape',...
          'RShape','Saeghe','Sharpc','Sine','Snake',...
-         'Spoon','Sshape','Trapezoid','Worm','WShape','Zshape'};
+         'Spoon','Sshape','Trapezoid','Worm','WShape','Zshape',...
+         'Multi_Models_1', 'Multi_Models_2', 'Multi_Models_3','Multi_Models_4'};
 
 figName = [];
 n = -1;
 % while true
+c = 0;
     fprintf('\nAvailable Models:\n')
-    for i=1:6
+    for i=1:8
         for j=1:5
+            c=c+1;
+            if c > 37
+                break;
+            end
             fprintf('%2u) %-18s',(i-1)*4+j,names{(i-1)*4+j})
         end
         fprintf('\n')

@@ -24,6 +24,10 @@ ax_y=linspace(axlim(3),axlim(4),ny); %computing the mesh points along each axis
 x=[x_tmp(:), y_tmp(:)]';
 xd = feval(ds, x-repmat(target,1,size(x,2)));
 h = streamslice(x_tmp,y_tmp,reshape(xd(1,:),ny,nx),reshape(xd(2,:),ny,nx),4,'method','cubic');
-set(h,'LineWidth', 0.75)
+set(h,'LineWidth', 0.25)
 % set(h,'color',[0.0667  0.0667 0.0667]);
+% set(h,'color',[0.5  0.5 0.5]);
+% set(h,'color',[1 1 0]);
+% set(h,'color',[0 1 1]);
+% set(h,'color',[1 0.5 0]);
 end

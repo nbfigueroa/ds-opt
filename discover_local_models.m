@@ -4,6 +4,8 @@ function [Priors, Mu, Sigma] = discover_local_models(Xi_ref, Xi_dot_ref, est_opt
 est_type       = est_options.type;
 max_gaussians  = est_options.maxK;
 do_plots       = est_options.do_plots;
+exp_scaling    = est_options.exp_scaling;
+
 if isempty(est_options.fixed_K)
     fixed_K        = 0;
 else
@@ -16,6 +18,14 @@ switch est_type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%% Option1: Non-parametric Clustering with Pos-Vel-cos-sim prior %%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                
+        
+        % Compute estimate of length-scale
+        [D, max_hist_D, max_D, h_hist] = computePairwiseDistances(Xi_ref',1);
+        sigma = sqrt(max_hist_D/2)
+        l = 1/(2*sigma^2)
+        pause(0);
+        delete(h_hist)
+        
         % Compute element-wise cosine similarities
         S = zeros(length(Xi_dot_ref),length(Xi_dot_ref));
         for i=1:length(Xi_dot_ref)
@@ -37,14 +47,22 @@ switch est_type
                 % Compute Position component
                 xi_i = Xi_ref(:,i);
                 xi_j = Xi_ref(:,j);
+
                 % LASA DATASET
-                p = exp(-0.001*norm(xi_i - xi_j));
-                p = 1; 
-                % GUI DATASET
-%                 p = exp(-1*norm(xi_i - xi_j));
+                if exp_scaling                     
+                    p = exp(-l*norm(xi_i - xi_j));
+                else
+                    p = 1;
+                end
+                
+                % With Euclidean pairwise kernel
+                f = p * s;
+                
+                % Exponential decay function
+%                 f = 2 * (1-exp(-s));
                 
                 % Shifted Cosine Similarity of velocity vectors
-                S(i,j) = p*s;
+                S(i,j) = f;
                 
             end
         end
@@ -61,8 +79,8 @@ switch est_type
         Xi_ref_mean = mean(Xi_ref,2);
         options                 = [];
         options.type            = 'full';  % Type of Covariance Matrix: 'full' = NIW or 'Diag' = NIG
-        options.T               = 50;     % Sampler Iterations
-        options.alpha           = max(0.1,0.1*(randi(11)-1)); % Concentration parameter
+        options.T               = 30;      % Sampler Iterations
+        options.alpha           = max(0.1,0.1*(randi(11)-2)); % Concentration parameter
         
         % Standard Base Distribution Hyper-parameter setting
         if strcmp(options.type,'diag')
@@ -189,13 +207,13 @@ switch est_type
         % Extract Learnt cluster parameters
         unique_labels = unique(est_labels);
         est_K = length(unique_labels);
-        Priors0 = zeros(1, est_K);
+        Priors = zeros(1, est_K);
         for k=1:est_K
-            Priors0(k)    = sum(est_labels==unique_labels(k))/length(Xi_ref(:,1:sample:end));
+            Priors(k)    = sum(est_labels==unique_labels(k))/length(Xi_ref(:,1:end));
             
         end
-        Mu0    = mean_record {Maxiter};
-        Sigma0 = covariance_record{Maxiter};
+        Mu    = mean_record {Maxiter};
+        Sigma = covariance_record{Maxiter};
         
 end
 

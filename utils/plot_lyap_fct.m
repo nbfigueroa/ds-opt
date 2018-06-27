@@ -10,7 +10,7 @@ x=[x_tmp(:), y_tmp(:)]';
 [ys2] = feval(lyap_fun,x);
 z_tmp = reshape(ys2,nx,ny);
 if contour
-    h = figure('Color',[1 1 1]); hc = contourf(x_tmp,y_tmp,z_tmp,40);
+    h = figure('Color',[1 1 1]); hc = contourf(x_tmp,y_tmp,z_tmp,30);
 %     set(hc,'LineWidth',1)
 else
     h = figure('Color',[1 1 1]); surfc(x_tmp,y_tmp,z_tmp); 
@@ -22,6 +22,7 @@ cmap1 = [linspace(1, 1, n); linspace(0, 1, n); linspace(0, 1, n)]';
 cmap2 = [linspace(1, 0, n); linspace(1, 0, n); linspace(1, 1, n)]';
 cmap =  [cmap1; cmap2(2:end, :)];
 colormap(vivid(cmap, [.5, .5]));
+% colormap(hsv);
 colorbar
 
 switch min_max
@@ -30,14 +31,15 @@ switch min_max
         if contour
             minimum_vdot = 0;
         end
-        hold on; scatter3(x(1,min_id_vdot),x(2,min_id_vdot),minimum_vdot,50,[1 1 1],'filled');
+        hold on; scatter3(x(1,min_id_vdot),x(2,min_id_vdot),minimum_vdot,100,[1 1 0],'filled');
     case 1
         [maximum_vdot, max_id_vdot]  = max(z_tmp(:));
         if contour
             maximum_vdot = 0;
         end
-        hold on; scatter3(x(1,max_id_vdot),x(2,max_id_vdot),maximum_vdot,50,[1 1 1],'filled');
+        hold on; scatter3(x(1,max_id_vdot),x(2,max_id_vdot),maximum_vdot,100,[1 1 0],'filled');
 end
+hold on;
 title(title_string, 'Interpreter','LaTex','FontSize', 18);
 
 end
