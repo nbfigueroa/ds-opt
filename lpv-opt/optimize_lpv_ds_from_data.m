@@ -68,9 +68,9 @@ for k = 1:K
         
         case 1 %: non-convex, unknown P            
             Constraints = [Constraints, transpose(A_vars{k})*P_var + P_var*A_vars{k} <= -epsilon*eye(N)];           
+            % This doesn't work, we have to shift the dataset to the origin
 %             Constraints = [Constraints, b_vars{k} == -A_vars{k}*attractor];            
 
-         
         case 2 %: non-convex with given P
             
             % Option 2: Less Strict and converges faster most of the times                      
