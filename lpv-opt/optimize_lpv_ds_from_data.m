@@ -169,7 +169,7 @@ end
 
 end
 
-%%%%% Using Sina's Code for (O1)
+%%%%% Using Sina's Code for (O1) -- will work if I have it in the path
 % p = ds_gmm.Priors;
 % m = ds_gmm.Mu;
 % s = ds_gmm.Sigma;
