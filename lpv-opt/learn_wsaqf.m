@@ -32,9 +32,9 @@ options.upperBoundEigenValue = true; %This is also another added feature that is
 
 %%%%%%%%%% Initial Guess for WSAQF Parameters %%%%%%%%%% 
 if nargin >= 2
-    shifts = varargin{1};    
-    if size(shifts,2) == 1
-        Vxf0.Mu = [zeros(2,1)];
+shifts = varargin{1};    
+    if shifts == 0
+        Vxf0.Mu = zeros(2,1);
         Vxf0.L = 0;
     else
         Vxf0.L = size(shifts,2);
