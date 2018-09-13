@@ -1,4 +1,4 @@
-# lpv-opt
+# ds-opt
 This toolbox includes the implementation of the estimation of Dynamical Systems formulated as Linear Parameter Varying (LPV) Systems with GMM-based mixing function and different Lyapunov candidate functions as proposed in [1].
 
 
