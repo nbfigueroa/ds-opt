@@ -6,75 +6,51 @@
 % trajectories acquired via kinesthetic taching and test the different    %
 % GMM fitting approaches.                                                 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  DATA LOADING OPTION 1: Draw with GUI %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% close all; clear all; clc
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  DATA LOADING OPTION 1:  Draw with GUI  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+close all; clear all; clc
 
 fig1 = figure('Color',[1 1 1]);
 % Axis limits
-% limits = [-6 0.5 -0.5 2];
-% limits = [-6 4 -2 2];
-limits = [-4 4 -4 4];
+limits = [-6 0.5 -0.5 2];
 axis(limits)
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.55, 0.2646 0.4358]);
 grid on
 
-% Global Attractor of DS
-att_g = [0 0]';
-radius_fun = @(x)(1 - my_exp_loc_act(5, att_g, x));
-scatter(att_g(1),att_g(2),100,[0 0 0],'d'); hold on;
-
 % Draw Reference Trajectories
-data = draw_mouse_data_on_DS(fig1, limits);
-Data = []; x0_all = [];
+[data, hp] = draw_mouse_data_on_DS(fig1, limits);
+Data = []; x0_all = []; x0_end = []; Data_sh = [];
 for l=1:length(data)    
-    % Check where demos end and shift
     data_ = data{l};
-    if radius_fun(data_(1:2,end)) > 0.75
-        data_(1:2,:) = data_(1:2,:) - repmat(data_(1:2,end), [1 length(data_)]);
-        data_(3:4,end) = zeros(2,1);
-    end    
+    x0_end = [x0_end data_(1:2,end)];
     Data = [Data data_];
     x0_all = [x0_all data_(1:2,1)];
+    
+    % Shift data to origin for (O2)
+    data_(1:2,:) = data_(1:2,:) - repmat(data_(1:2,end), [1 length(data_)]);
+    data_(3:4,end) = zeros(2,1);
+
+    Data_sh = [Data_sh data_];
 end
+
+% Global Attractor of DS
+att_g = mean(x0_end,2);
+
+%% Position/Velocity Trajectories
+delete(hp)
+scatter(att_g(1),att_g(2),100,[0 0 0],'d'); hold on;
+if exist('h_att_g','var');  delete(h_att_g); end
+[h_data, h_att, h_vel] = plot_reference_trajectories(Data, att_g, [], 10);
+grid on;
+box on;
+title('Demonstrated Trajectories','Interpreter','LaTex','FontSize',20);
+xlabel('$x_1$','Interpreter','LaTex','FontSize',20);
+ylabel('$x_2$','Interpreter','LaTex','FontSize',20);
 
 % Position/Velocity Trajectories
 Xi_ref     = Data(1:2,:);
 Xi_dot_ref = Data(3:end,:);
-
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  DATA LOADING OPTION 2: Choose from LASA DATASET %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Choose DS LASA Dataset to load
-clear all; close all; clc
-[demos, limits] = load_LASA_dataset();
-
-% Global Attractor of DS
-att_g = [0 0]';
-
-sample = 2;
-Data = []; x0_all = [];
-for l=1:3   
-    % Check where demos end and shift    
-    data_ = [demos{l}.pos(:,1:sample:end); demos{l}.vel(:,1:sample:end);];    
-    Data = [Data data_];
-    x0_all = [x0_all data_(1:2,20)];
-    clear data_
-end
-
-%% Position/Velocity Trajectories
-Xi_ref     = Data(1:2,:);
-Xi_dot_ref = Data(3:end,:);
-figure('Color',[1 1 1])
-if exist('h_att_g','var');  delete(h_att_g); end
-if exist('h_att_l','var');  delete(h_att_l); end
-[h_data, h_att, h_vel] = plot_reference_trajectories(Data, att_g, [], 10);
-grid on;
-box on;
-title('Reference Trajectories','Interpreter','LaTex','FontSize',20);
-xlabel('$\xi_1$','Interpreter','LaTex','FontSize',20);
-ylabel('$\xi_2$','Interpreter','LaTex','FontSize',20);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%              Step 1: Fit GMM to Trajectory Data        %%%%%

@@ -1,4 +1,4 @@
-function [data ] = draw_mouse_data_on_DS(fig, limits, varargin)
+function [data, hp] = draw_mouse_data_on_DS(fig, limits, varargin)
 % GENERATE_MOUSE_DATA(NTH_ORDER, N_DOWNSAMPLE) request the user to give
 % demonstrations of a trajectories in a 2D workspace using the mouse cursor
 % The data is stored in an [x ; dx/dt] structure  
@@ -43,6 +43,9 @@ rotate3d off
 pan off
 brush off
 datacursormode off
+xlabel('$x_1$','Interpreter','LaTex','FontSize',20);
+ylabel('$x_2$','Interpreter','LaTex','FontSize',20);
+
 
 set(fig,'WindowButtonDownFcn',@(h,e)button_clicked(h,e));
 set(fig,'WindowButtonUpFcn',[]);
@@ -50,19 +53,15 @@ set(fig,'WindowButtonMotionFcn',[]);
 set(fig,'Pointer','circle');
 hp = gobjects(0);
 % Stop recording
-stop_btn = uicontrol('style','pushbutton','String', 'stop recording','Callback',@stop_recording, ...
-          'position',[100 20 110 25], ...
-          'UserData', 1);
-      
+stop_btn = uicontrol('style','pushbutton','String', 'Store Data','Callback',@stop_recording, ...
+          'position',[10 10 80 25], 'UserData', 1);      
 % Clear button
-clear_btn = uicontrol('style','pushbutton','String', 'clear data','Callback',@clear_data, ...
-          'position',[220 20 110 25], ...
-'UserData', 1);        
-      
+clear_btn = uicontrol('style','pushbutton','String', 'Clear Data','Callback',@clear_data, ...
+          'position',[110 10 80 25], 'UserData', 1);              
 % wait until demonstration is finished
-while( (get(stop_btn, 'UserData') == 1));
+while( (get(stop_btn, 'UserData') == 1))
     pause(0.01);
-    if demonstration_index ~= demonstration_index_monitor;
+    if demonstration_index ~= demonstration_index_monitor
         x_obs{demonstration_index} = X;
         X = [];
         demonstration_index_monitor = demonstration_index;
