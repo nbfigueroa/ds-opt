@@ -133,73 +133,39 @@ ylim(XLimPlot(2,:));
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%       Step 3: Generated Deformed Dynamics function       %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % Generate DS function
 EIG0 = -diag([1,2.*ones(1,dim-1)]);
 ds_diff = @(x) diffeomorphic_ds(x-repmat(att,[1 size(x,2)]), EIG0, source, jac_inverse_diff_fun);
 
-% Plot DS and demonstrations
-plot_repr = 1;
-
-fig2 = figure('Color',[1 1 1]);
-[hd] = scatter(Data(1,:),Data(2,:),10,[1 0 0],'filled'); hold on
+%%%%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
+simulate_reproductions = 1;
+[hd, hs, hr, x_sim] = visualizeEstimatedDS(Data(1:2,:), ds_diff, simulate_reproductions, x0_all);
 limits = axis;
-limits_ = limits + [-0.15 0.15 -0.15 0.15];
-[hs] = plot_ds_model(fig1, ds_diff, [0 0]', limits_,'medium'); hold on;
-axis(limits_)
-box on
-grid on
-xlabel('$\xi_1$','Interpreter','LaTex','FontSize',20);
-ylabel('$\xi_2$','Interpreter','LaTex','FontSize',20);
-
-% Simulate trajectories and plot them on top
-if plot_repr
-    opt_sim = [];
-    opt_sim.dt = 0.01;
-    opt_sim.i_max = 3000;
-    opt_sim.tol = 0.1;
-    opt_sim.plot = 0;
-    [x_sim xd_sim]=Simulation(x0_all ,[],ds_diff, opt_sim);
-    [hr] = scatter(x_sim(1,:),x_sim(2,:),10,[0 0 0],'filled'); hold on
-end
 title('Diffeomorphic Dynamics $\dot{\xi} = A(\phi^{-1}(\xi))J_{\phi}(\phi^{-1}(\xi))\phi^{-1}(\xi) $', 'Interpreter','LaTex','FontSize',15)
 
-%% Compare Velocities from Demonstration vs DS
-% Simulated velocities of DS converging to target from starting point
-xd_dot = []; xd = [];
-% Simulate velocities from same reference trajectory
-for i=1:length(Data_sh)
-    x_ = Data_sh(1:2,i);
-    xd_dot_ = feval(ds_diff, x_);
-    % Record Trajectories
-    xd_dot = [xd_dot xd_dot_];        
-end
-
-% Plot Demonstrated Velocities vs Generated Velocities
-if exist('h_vel','var');     delete(h_vel);    end
-h_vel = figure('Color',[1 1 1]);
-plot(Data(3,:)', '.-','Color',[0 0 1], 'LineWidth',2); hold on;
-plot(Data(4,:)', '.-','Color',[1 0 0], 'LineWidth',2); hold on;
-plot(xd_dot(1,:)','--','Color',[0 0 1], 'LineWidth', 1); hold on;
-plot(xd_dot(2,:)','--','Color',[1 0 0], 'LineWidth', 1); hold on;
-grid on;
-legend({'$\dot{\xi}^{ref}_{1}$','$\dot{\xi}^{ref}_{2}$','$\dot{\xi}^{d}_{1}$','$\dot{\xi}^{d}_{2}$'}, 'Interpreter', 'LaTex', 'FontSize', 15)
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Compute Errors
 % Compute RMSE on training data
-rmse = mean(rmse_error(ds_lpv, Xi_ref, Xi_dot_ref));
-fprintf('LPV-DS with (O%d), got prediction RMSE on training set: %d \n', constr_type+1, rmse);
+rmse = mean(rmse_error(ds_diff, Data(1:2,:), Data(3:4,:)));
+fprintf('diff-DS got prediction RMSE on training set: %d \n', rmse);
 
 % Compute e_dot on training data
-edot = mean(edot_error(ds_lpv, Xi_ref, Xi_dot_ref));
-fprintf('LPV-DS with (O%d), got e_dot on training set: %d \n', constr_type+1, edot);
+edot = mean(edot_error(ds_diff, Data(1:2,:), Data(3:4,:)));
+fprintf('diff-DS got prediction e_dot on training set: %d \n', edot);
 
 % Compute DTWD between train trajectories and reproductions
-nb_traj       = size(x_sim,3);
-ref_traj_leng = size(Xi_ref,2)/nb_traj;
-dtwd = zeros(1,nb_traj);
-for n=1:nb_traj
-    start_id = 1+(n-1)*ref_traj_leng;
-    end_id   = n*ref_traj_leng;
-   dtwd(1,n) = dtw(x_sim(:,:,n)',Xi_ref(:,start_id:end_id)',20);
+if simulate_reproductions
+    nb_traj       = size(x_sim,3);
+    ref_traj_leng = size(Data,2)/nb_traj;
+    dtwd = zeros(1,nb_traj);
+    for n=1:nb_traj
+        start_id = round(1+(n-1)*ref_traj_leng);
+        end_id   = round(n*ref_traj_leng);
+        dtwd(1,n) = dtw(x_sim(:,:,n)',Data(1:2,start_id:end_id)',20);
+    end
+    fprintf('diff-DS got DTWD of reproduced trajectories: %2.4f +/- %2.4f \n', mean(dtwd),std(dtwd));
 end
-fprintf('LPV-DS got DTWD of reproduced trajectories: %2.4f +/- %2.4f \n', mean(dtwd),std(dtwd));
+% Compare Velocities from Demonstration vs DS
+h_vel = visualizeEstimatedVelocities(Data, ds_diff);

@@ -22,7 +22,7 @@ close all; clear all; clc
 % 11: Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 2; 
+chosen_dataset  = 5; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 0; % For real 3D data
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
@@ -57,7 +57,7 @@ if do_ms_bic
     nb_gaussians = length(Priors0);
 else
     % Select manually the number of Gaussian components
-    nb_gaussians = 3;
+    nb_gaussians = 7;
 end
 
 %finding an initial guess for GMM's parameter
@@ -85,16 +85,17 @@ options.display       = 1;       % An option to control whether the algorithm
 options.tol_stopping  = 10^-9;    % A small positive scalar defining the stoppping
                                   % tolerance for the optimization solver [default: 10^-10]
 options.max_iter      = 1000;     % Maximum number of iteration forthe solver [default: i_max=1000]
-options.objective     = 'mse';    % 'likelihood'
-sub_sample            = 2;
+options.objective     = 'likelihood';    % 'mse'/'likelihood'
+sub_sample            = 1;
 
 %running SEDS optimization solver
 [Priors Mu Sigma]= SEDS_Solver(Priors0,Mu0,Sigma0,[Xi_ref(:,1:sub_sample:end); Xi_dot_ref(:,1:sub_sample:end)],options); 
-ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x,1:2,3:4);
+ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:2,3:4);
 
 %%%%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
-[hd, hs, hr] = visualizeEstimatedDS(Xi_ref, ds_lpv, 1, x0_all);
-
+simulate_reproductions = 1;
+[hd, hs, hr, x_sim] = visualizeEstimatedDS(Data(1:2,:), ds_seds, simulate_reproductions, x0_all);
+limits = axis;
 switch options.objective
     case 'mse'        
         title('SEDS Dynamics with $J(\theta_{\gamma})$=MSE', 'Interpreter','LaTex','FontSize',20)
@@ -103,8 +104,10 @@ switch options.objective
 end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%   Step 3 (Evaluation): Compute Metric and Visualize Velocities  %%
+%%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Compute Errors
+clc;
 % Compute RMSE on training data
 rmse = mean(rmse_error(ds_seds, Xi_ref, Xi_dot_ref));
 fprintf('SEDS got prediction RMSE on training set: %d \n', rmse);
@@ -114,32 +117,24 @@ edot = mean(edot_error(ds_seds, Xi_ref, Xi_dot_ref));
 fprintf('SEDS got prediction e_dot on training set: %d \n', edot);
 
 % Compute DTWD between train trajectories and reproductions
-nb_traj       = size(x_seds,3);
-ref_traj_leng = size(Xi_ref,2)/nb_traj;
-dtwd = zeros(1,nb_traj);
-for n=1:nb_traj
-    start_id = 1+(n-1)*ref_traj_leng;
-    end_id   = n*ref_traj_leng;
-   dtwd(1,n) = dtw(x_seds(:,:,n)',Xi_ref(:,start_id:end_id)');
+if simulate_reproductions
+    nb_traj       = size(x_sim,3);
+    ref_traj_leng = size(Xi_ref,2)/nb_traj;
+    dtwd = zeros(1,nb_traj);
+    for n=1:nb_traj
+        start_id = round(1+(n-1)*ref_traj_leng);
+        end_id   = round(n*ref_traj_leng);
+        dtwd(1,n) = dtw(x_sim(:,:,n)',Data(1:2,start_id:end_id)',20);
+    end
 end
-
 fprintf('SEDS got reproduction DTWD on training set: %2.4f +/- %2.4f \n', mean(dtwd),std(dtwd));
 
-%% Plot GMM Parameters after SEDS
-figure('Color', [1 1 1]);
-est_labels =  my_gmm_cluster(Xi_ref, Priors', Mu(1:2,:), Sigma(1:2,1:2,:), 'hard', []);
-scatter(Xi_ref(1,:),Xi_ref(2,:),10,[1 0 0],'filled'); hold on
-plotGMMParameters( Xi_ref, est_labels, Mu(1:2,:), Sigma(1:2,1:2,:),1);
-limits_ = limits + [-0.015 0.015 -0.015 0.015];
-axis(limits_)
-box on
-grid on
-title('$\theta_{\gamma}=\{\pi_k,\mu^k,\Sigma^k\}$ after SEDS Optimization', 'Interpreter', 'LaTex','FontSize',20)
-%%
-ml_plot_gmm_pdf(Xi_ref, Priors', Mu(1:2,:), Sigma(1:2,1:2,:), limits)
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%     Plot Choosen Lyapunov Function and derivative  %%
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Compare Velocities from Demonstration vs DS
+h_vel = visualizeEstimatedVelocities(Data, ds_seds);
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%     Step 5 (Optional - Stability Check 2D-only): Plot Lyapunov Function and derivative  %%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Type of plot
 contour = 1; % 0: surf, 1: contour
 clear lyap_fun_comb lyap_der 
@@ -152,29 +147,8 @@ title_string = {'$V(\xi) = (\xi-\xi^*)^T(\xi-\xi^*)$'};
 lyap_der = @(x)lyapunov_derivative_PQLF(x, att, P, ds_seds);
 title_string_der = {'Lyapunov Function Derivative $\dot{V}(\xi)$'};
 
-if exist('h_lyap','var');     delete(h_lyap);     end
-if exist('h_lyap_der','var'); delete(h_lyap_der); end
+% Plots
 h_lyap     = plot_lyap_fct(lyap_fun, contour, limits,  title_string, 0);
-h_lyap_der = plot_lyap_fct(lyap_der, contour, limits_,  title_string_der, 1);
-
-
-%% Compare Velocities from Demonstration vs DS
-% Simulated velocities of DS converging to target from starting point
-xd_dot = []; xd = [];
-% Simulate velocities from same reference trajectory
-for i=1:length(Data)
-    xd_dot_ = ds_seds(Data(1:2,i));    
-    % Record Trajectories
-    xd_dot = [xd_dot xd_dot_];        
-end
-
-% Plot Demonstrated Velocities vs Generated Velocities
-if exist('h_vel','var');     delete(h_vel);    end
-h_vel = figure('Color',[1 1 1]);
-plot(Data(3,:)', '.-','Color',[0 0 1], 'LineWidth',2); hold on;
-plot(Data(4,:)', '.-','Color',[1 0 0], 'LineWidth',2); hold on;
-plot(xd_dot(1,:)','--','Color',[0 0 1], 'LineWidth', 1); hold on;
-plot(xd_dot(2,:)','--','Color',[1 0 0], 'LineWidth', 1); hold on;
-grid on;
-legend({'$\dot{\xi}^{ref}_{x}$','$\dot{\xi}^{ref}_{y}$','$\dot{\xi}^{d}_{x}$','$\dot{\xi}^{d}_{y}$'}, 'Interpreter', 'LaTex', 'FontSize', 15)
-
+[hd] = scatter(Data(1,:),Data(2,:),10,[1 1 0],'filled'); hold on;
+h_lyap_der = plot_lyap_fct(lyap_der, contour, limits,  title_string_der, 1);
+[hd] = scatter(Data(1,:),Data(2,:),10,[1 1 0],'filled'); hold on;

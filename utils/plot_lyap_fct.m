@@ -40,5 +40,6 @@ switch min_max
 end
 hold on;
 title(title_string, 'Interpreter','LaTex','FontSize', 18);
-
+xlabel('$\xi_1$','Interpreter','LaTex','FontSize',20);
+ylabel('$\xi_2$','Interpreter','LaTex','FontSize',20);
 end
