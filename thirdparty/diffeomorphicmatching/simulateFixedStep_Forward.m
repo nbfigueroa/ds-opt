@@ -8,11 +8,8 @@ maxStep = 1001;
 stepSizeFac = 1;
 offsetEnd = zeros(dim,1);
 
-epsilonTarg = epsilonOrig*norm(Y0);
-epsilonTarg_2 = epsilonTarg^2;
-stepSize = mean(sqrt(sum( diff(PhiX,[],2).^2,1)))*(size(PhiX,2))/maxStep*stepSizeFac;
-epsilonTarg1 = epsilonPhi*sqrt(mean(sum(X0.^2,1)));
-epsilonTarg1_2 = epsilonTarg1^2;
+EIG0 = -diag([1,2.*ones(1,dim-1)]);
+
 
 % Converging linear Compliant DS
 % A_c tracking Linear DS 
@@ -22,14 +19,23 @@ XZ0 = null(Y0).';
 R0 = [Y0;XZ0].';
 A = R0*EIG0*R0.';
 
+
+epsilonTarg = epsilonOrig*norm(Y0);
+epsilonTarg_2 = epsilonTarg^2;
+stepSize = mean(sqrt(sum( diff(PhiX,[],2).^2,1)))*(size(PhiX,2))/maxStep*stepSizeFac;
+epsilonTarg1 = epsilonPhi*sqrt(mean(sum(X0.^2,1)));
+epsilonTarg1_2 = epsilonTarg1^2;
+
+
+
 % Tracking linear Compliant DS
 % A_t tracking Linear DS 
-y1 = 1;
-y2 = -Y0(1)/Y0(2);
-y = [y1;y2];
-Q = [y./norm(y),Y0./norm(Y0)];
-L = [-20 0 ; 0 -1];
-A = Q*L*Q';
+% y1 = 1;
+% y2 = -Y0(1)/Y0(2);
+% y = [y1;y2];
+% Q = [y./norm(y),Y0./norm(Y0)];
+% L = [-20 0 ; 0 -1];
+% A = Q*L*Q';
 
 
 phiZero = PhiX(:,end);

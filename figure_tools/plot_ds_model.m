@@ -22,8 +22,6 @@ ax_x=linspace(axlim(1),axlim(2),nx); %computing the mesh points along each axis
 ax_y=linspace(axlim(3),axlim(4),ny); %computing the mesh points along each axis
 [x_tmp, y_tmp]=meshgrid(ax_x,ax_y); %meshing the input domain
 x=[x_tmp(:), y_tmp(:)]';
-size(x)
-size(repmat(target,1,size(x,2)))
 x_ = x-repmat(target,1,size(x,2));
 xd = feval(ds, x_);
 h = streamslice(x_tmp,y_tmp,reshape(xd(1,:),ny,nx),reshape(xd(2,:),ny,nx),4,'method','cubic');

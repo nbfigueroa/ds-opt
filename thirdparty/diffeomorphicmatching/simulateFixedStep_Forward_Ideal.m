@@ -28,15 +28,6 @@ XZ0 = null(Y0).';
 R0 = [Y0;XZ0].';
 A = R0*EIG0*R0.';
 
-% Tracking linear Compliant DS
-% A_t tracking Linear DS 
-y1 = 1;
-y2 = -Y0(1)/Y0(2);
-y = [y1;y2];
-Q = [y./norm(y),Y0./norm(Y0)];
-L = [-20 0 ; 0 -1];
-A = Q*L*Q';
-
 phiZero = PhiX(:,end);
 
 %'Ideal' integration ( so X is integrated in the transformed space and then

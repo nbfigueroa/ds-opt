@@ -22,7 +22,11 @@ if doInvJac
         v(:,k) = Ji(:,:,k)\v(:,k);
     end
 else
-    v = reshape(mtimesx(Ji, reshape(v,dim,1,lX)),dim,lX);
+    if lX > 1
+        v = reshape(mtimesx(Ji, reshape(v,dim,1,lX)),dim,lX);
+    else
+        v = mtimesx(Ji, v);
+    end
 end
 
 end

@@ -33,21 +33,10 @@ stepSizeFac = 1;
 
 stepSize = mean(sqrt(sum( diff(PhiX,[],2).^2,1)))*(size(PhiX,2))/maxStep*stepSizeFac;
 
-% Converging linear Compliant DS
-% A_c tracking Linear DS 
 Y0 = Y0./norm(Y0);
 XZ0 = null(Y0).';
 R0 = [Y0;XZ0].';
 A = R0*EIG0*R0.';
-
-% Tracking linear Compliant DS
-% A_t tracking Linear DS 
-y1 = 1;
-y2 = -Y0(1)/Y0(2);
-y = [y1;y2];
-Q = [y./norm(y),Y0./norm(Y0)];
-L = [-20 0 ; 0 -1];
-A = Q*L*Q';
 
 [X, Y] = meshgrid(linspace(xLim(1), xLim(2), numPoints), linspace(xLim(3), xLim(4), numPoints));
 allX = [X(:)'; Y(:)'];
