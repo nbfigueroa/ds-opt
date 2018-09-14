@@ -21,7 +21,7 @@ git submodule update --remote
 ### Instructions and Content
 
 
-## Running the demo scripts
+##### Running the demo scripts
 There are three important demo scripts:
 
 ### Example Datasets
