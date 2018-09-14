@@ -6,6 +6,21 @@ For comparison purposes, this toolbox also includes implementations and demo scr
   <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Lshape_lpvO3.png" width="220">
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220">
 </>
+  
+### Installation Instructions
+This package needs the **physically-consisent** GMM fitting proposed in [1] and implemented in [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git). If you do not already have this package, you can download it as a submodule. After cloning this repo, one must initialize/download the submodule with the following commands:
+```
+cd ~./ds_opt
+git submodule init
+git submodule update
+```
+In case you want to update the submodule to its latest version, you can do so with the following command:
+```
+git submodule update --remote
+```
+
+### Running the demo scripts
+There are three important demo scripts:
 
 
 **References**     
