@@ -18,9 +18,15 @@ In case you want to update the submodule to its latest version, you can do so wi
 ```
 git submodule update --remote
 ```
+### Instructions and Content
 
-### Running the demo scripts
+
+## Running the demo scripts
 There are three important demo scripts:
+
+### Example Datasets
+These examples + more datasets are provided in ```
+./datasets``` folder.
 
 
 **References**     
