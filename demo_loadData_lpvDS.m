@@ -25,9 +25,9 @@ close all; clear all; clc
 % 12: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 5; 
+chosen_dataset  = 6; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 0; % For real 3D data only
+nb_trajectories = 5; % For real 3D data only
 [Data, Data_sh, att, x0_all, ~, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
@@ -68,7 +68,7 @@ Xi_dot_ref = Data(M+1:end,:);
 % 1: GMM-EM Model Selection via BIC
 % 2: CRP-GMM (Collapsed Gibbs Sampler)
 est_options = [];
-est_options.type             = 1;   % GMM Estimation Alorithm Type   
+est_options.type             = 0;   % GMM Estimation Alorithm Type   
 
 % If algo 1 selected:
 est_options.maxK             = 15;  % Maximum Gaussians for Type 1
@@ -84,7 +84,7 @@ est_options.sub_sample       = 1;   % Size of sub-sampling of trajectories
 
 % Metric Hyper-parameters
 est_options.estimate_l       = 1;   % '0/1' Estimate the lengthscale, if set to 1
-est_options.l_sensitivity    = 5;   % lengthscale sensitivity [1-10->>100]
+est_options.l_sensitivity    = 2;   % lengthscale sensitivity [1-10->>100]
                                     % Default value is set to '2' as in the
                                     % paper, for very messy, close to
                                     % self-interescting trajectories, we
@@ -100,8 +100,8 @@ est_options.length_scale     = [];  % if estimate_l=0 you can define your own
 clear ds_gmm; ds_gmm.Mu = Mu; ds_gmm.Sigma = Sigma; 
 ds_gmm.Priors = Priors; 
 
-%% (Optional) Step 2.1: Adjust the Covariance matrices if they are too thin
-% This is particularly useful for EM-estimates
+%% (Recommended!) Step 2.1: Dilate the Covariance matrices that are too thin
+% This is recommended to get smoother streamlines/global dynamics
 adjusts_C  = 1;
 if adjusts_C  == 1
     tot_scale_fact = 1; rel_scale_fact = 0.25;

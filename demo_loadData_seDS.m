@@ -22,7 +22,7 @@ close all; clear all; clc
 % 11: Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 5; 
+chosen_dataset  = 1; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 0; % Only for real 3D data
 [Data, Data_sh, att, x0_all, data, ~] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
