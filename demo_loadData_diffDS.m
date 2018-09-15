@@ -158,7 +158,7 @@ ds_diff = @(x) diffeomorphic_ds(x-repmat(att,[1 size(x,2)]), EIG0, source, jac_i
 simulate_reproductions = 1;
 [hd, hs, hr, x_sim] = visualizeEstimatedDS(alltarget_trajectory(1:2,:), ds_diff, simulate_reproductions, Xinit);
 limits = axis;
-title('Diffeomorphic Matching - Dynamics', 'Interpreter','LaTex','FontSize',15)
+title('Diffeomorphic Matching - Dynamics', 'Interpreter','LaTex','FontSize',17)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
