@@ -49,9 +49,15 @@ These examples + more datasets are provided in ```
 -  **2D N-shape from LASA Handwriting Dataset**  
 <p align="center">
   <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_seds.png" width="220">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_diff.png" width="220">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_lpvO3.png" width="215"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_diff.png" width="220">
 </>
 
+
+-  **2D Hee-shape from LASA Handwriting Dataset**  
+<p align="center">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Hee_seds.png" width="220">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Hee_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Hee_lpvO3.png" width="215"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Hee_diff.png" width="220">
+</>
 
 
 **References**     
