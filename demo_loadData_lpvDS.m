@@ -46,7 +46,7 @@ Xi_dot_ref = Data(M+1:end,:);
 clear all; close all; clc
 
 % Select one of the motions from the LASA Handwriting Dataset
-sub_sample      = 3; % Each trajectory has 1000 samples when set to '1'
+sub_sample      = 5; % Each trajectory has 1000 samples when set to '1'
 nb_trajectories = 5; % Maximum 7, will select randomly if <7
 [Data, Data_sh, att, x0_all, ~, dt] = load_LASA_dataset_DS(sub_sample, nb_trajectories);
 
@@ -84,7 +84,7 @@ est_options.sub_sample       = 1;   % Size of sub-sampling of trajectories
 
 % Metric Hyper-parameters
 est_options.estimate_l       = 1;   % '0/1' Estimate the lengthscale, if set to 1
-est_options.l_sensitivity    = 10;   % lengthscale sensitivity [1-10->>100]
+est_options.l_sensitivity    = 5;   % lengthscale sensitivity [1-10->>100]
                                     % Default value is set to '2' as in the
                                     % paper, for very messy, close to
                                     % self-interescting trajectories, we
@@ -96,7 +96,7 @@ est_options.length_scale     = [];  % if estimate_l=0 you can define your own
 % Fit GMM to Trajectory Data
 [Priors, Mu, Sigma] = fit_gmm(Xi_ref, Xi_dot_ref, est_options);
 
-%% Generate GMM data structure for DS learning
+% Generate GMM data structure for DS learning
 clear ds_gmm; ds_gmm.Mu = Mu; ds_gmm.Sigma = Sigma; 
 ds_gmm.Priors = Priors; 
 
