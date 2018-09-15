@@ -25,7 +25,7 @@ There are three important demo scripts:
 
 ### Example Datasets
 These examples + more datasets are provided in ```
-./datasets``` folder. Following we show some **notably challenging motions** that cannot be accurately encoded with SEDS [3] **(1st Column)** or a PC-GMM-based LPV-DS [1] with a simple Quadradtic Lyapunov Function (QLF) **(2nd Column)**, yet can be correctly encoded with the proposed PC-GMM-based LPV-DS with a parametrized QLF (P-QLF) [1] **(3rd Column)** yielding comparable results to the global diffeomorphic matching approach **(4th Column)**. 
+./datasets``` folder. Following we show some **notably challenging motions** that cannot be accurately encoded with SEDS [3] **(1st Column)** or a PC-GMM-based LPV-DS [1] with a simple Quadradtic Lyapunov Function (QLF) **(2nd Column)**, yet can be correctly encoded with the proposed PC-GMM-based LPV-DS with a parametrized QLF (P-QLF) [1] **(3rd Column)** yielding comparable results to the global diffeomorphic matching approach **(4th Column)**, which is known to out-perform SEDS in single-behavior motions. 
 
 -  **2D Messy Snake Dataset**  
 <p align="center">
