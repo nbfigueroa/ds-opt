@@ -8,7 +8,7 @@ For comparison purposes, this toolbox also includes implementations and demo scr
 </>
   
 ### Installation Instructions
-This package needs the **physically-consisent** GMM fitting proposed in [1] and implemented in [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git). If you do not already have this package, you can download it as a submodule. After cloning this repo, one must initialize/download the submodule with the following commands:
+This package needs the **physically-consisent** GMM (PC-GMM) fitting proposed in [1] and implemented in [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git). If you do not already have this package, you can download it as a submodule. After cloning this repo, one must initialize/download the submodule with the following commands:
 ```
 cd ~./ds_opt
 git submodule init
