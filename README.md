@@ -36,7 +36,7 @@ These examples + more datasets are provided in ```
 -  **2D S-shape Dataset**  
 <p align="center">
   <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_seds.png" width="220">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_diff.png" width="220">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_diff.png" width="215">
 </>
   
 -  **2D Multi-Behavior (Single Target) Dataset**  
