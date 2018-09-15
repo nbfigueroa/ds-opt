@@ -1,7 +1,6 @@
 function [Xinit, target, allTarget, allTargetV, allSource, allSourceV, nDemos, indD] = processDrawnDataset(data, use_demos, step_demos,dt)
 % Process Drawn Dataset Function
-dim =2;
-
+dim =size(data{1},1)/2
 
 % Pre-process demos so they have the same number of points
 lengths = [];

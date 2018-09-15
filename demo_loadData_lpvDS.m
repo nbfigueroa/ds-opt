@@ -6,9 +6,9 @@
 % trajectories acquired via kinesthetic taching and test the different    %
 % GMM fitting approaches.                                                 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  Step 1 (DATA LOADING): Load Datasets %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Step 1 - OPTION 1 (DATA LOADING): Load CORL-paper Datasets %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all; clear all; clc
 %%%%%%%%%%%%%%%%%%%%%%%%% Select a Dataset %%%%%%%%%%%%%%%%%%%%%%%%%%
 % 1:  Messy Snake Dataset   (2D) *
@@ -26,8 +26,8 @@ close all; clear all; clc
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
 chosen_dataset  = 4; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 0; % For real 3D data
-[Data, Data_sh, att, x0_all, ~, ~] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
+nb_trajectories = 0; % For real 3D data only
+[Data, Data_sh, att, x0_all, ~, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
 vel_samples = 10; vel_size = 0.5; 
@@ -37,6 +37,26 @@ vel_samples = 10; vel_size = 0.5;
 M          = size(Data,1)/2;    
 Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);       
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Step 1 - OPTION 2 (DATA LOADING): Load Motions from LASA Handwriting Dataset %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Choose DS LASA Dataset to load
+clear all; close all; clc
+
+% Select one of the motions from the LASA Handwriting Dataset
+sub_sample      = 3; % Each trajectory has 1000 samples when set to '1'
+nb_trajectories = 5; % Maximum 7, will select randomly if <7
+[Data, Data_sh, att, x0_all, ~, dt] = load_LASA_dataset_DS(sub_sample, nb_trajectories);
+
+% Position/Velocity Trajectories
+vel_samples = 15; vel_size = 0.5; 
+[h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
+
+% Extract Position and Velocities
+M          = size(Data,1)/2;    
+Xi_ref     = Data(1:M,:);
+Xi_dot_ref = Data(M+1:end,:);  
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 2 (GMM FITTING): Fit GMM to Trajectory Data %%
@@ -63,7 +83,7 @@ est_options.sub_sample       = 1;   % Size of sub-sampling of trajectories
 
 % Metric Hyper-parameters
 est_options.estimate_l       = 1;   % '0/1' Estimate the lengthscale, if set to 1
-est_options.l_sensitivity    = 5;   % lengthscale sensitivity [1-10->>100]
+est_options.l_sensitivity    = 2;   % lengthscale sensitivity [1-10->>100]
                                     % Default value is set to '2' as in the
                                     % paper, for very messy, close to
                                     % self-interescting trajectories, we
@@ -75,15 +95,15 @@ est_options.length_scale     = [];  % if estimate_l=0 you can define your own
 % Fit GMM to Trajectory Data
 [Priors, Mu, Sigma] = fit_gmm(Xi_ref, Xi_dot_ref, est_options);
 
-% Generate GMM data structure for DS learning
+%% Generate GMM data structure for DS learning
 clear ds_gmm; ds_gmm.Mu = Mu; ds_gmm.Sigma = Sigma; 
 ds_gmm.Priors = Priors; 
 
 %% (Optional) Step 2.1: Adjust the Covariance matrices if they are too thin
 % This is particularly useful for EM-estimates
-adjusts_C  = 1;
+adjusts_C  = 0;
 if adjusts_C  == 1
-    tot_scale_fact = 1.15; rel_scale_fact = 0.15;
+    tot_scale_fact = 1.15; rel_scale_fact = 0.25;
     Sigma_ = adjust_Covariances(Sigma, tot_scale_fact, rel_scale_fact);
     ds_gmm.Sigma = Sigma_;
 end   
@@ -102,9 +122,9 @@ limits = axis;
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%
 % Type of constraints/optimization 
-constr_type = 2;      % 0:'convex':     A' + A < 0
+constr_type = 0;      % 0:'convex':     A' + A < 0 (Proposed in paper)
                       % 1:'non-convex': A'P + PA < 0
-                      % 2:'non-convex': A'P + PA < -Q given P                                  
+                      % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
 init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx                
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if constr_type == 0 || constr_type == 1

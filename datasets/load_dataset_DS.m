@@ -27,6 +27,7 @@ if isempty(sub_sample)
    sub_sample = 2; 
 end
 
+% For the messy-snake dataset which is already at the origin
 if dataset == 1
     Data_ = load(strcat(pkg_dir,'/datasets/',dataset_name));
     data = Data_.data;
@@ -36,6 +37,8 @@ if dataset == 1
     att = [0 0]';
     data_12 = data{1}(:,1:2);
     dt = abs((data_12(1,1) - data_12(1,2))/data_12(3,1));
+
+% Processing for the 2D Datasets
 elseif dataset <= 4
     data_ = load(strcat(pkg_dir,'/datasets/',dataset_name));
     data = data_.data;    
@@ -72,6 +75,8 @@ elseif dataset <= 4
     end
     data_12 = data{1}(:,1:2);
     dt = abs((data_12(1,1) - data_12(1,2))/data_12(3,1));
+    
+% Processing for the 3D Datasets
 else
     data_ = load(strcat(pkg_dir,'/datasets/',dataset_name));
     data = data_.data;

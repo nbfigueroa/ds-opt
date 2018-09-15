@@ -4,9 +4,9 @@
 % Author: Nadia Figueroa                                                  %
 % Date: June 3rd, 2018                                                    %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  Step 1 (DATA LOADING): Load Datasets %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Step 1 - OPTION 1 (DATA LOADING): Load CORL-paper Datasets %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all; clear all; clc
 %%%%%%%%%%%%%%%%%%%%%%%%% Select a Dataset %%%%%%%%%%%%%%%%%%%%%%%%%%
 % 1:  Messy Snake Dataset   (2D)
@@ -24,8 +24,8 @@ close all; clear all; clc
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
 chosen_dataset  = 5; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 0; % For real 3D data
-[Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
+nb_trajectories = 0; % Only for real 3D data
+[Data, Data_sh, att, x0_all, data, ~] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
 vel_samples = 10; vel_size = 0.5; 
@@ -35,7 +35,27 @@ limits = axis;
 % Extract Position and Velocities
 M          = size(Data,1)/2;    
 Xi_ref     = Data_sh(1:M,:);
-Xi_dot_ref = Data_sh(M+1:end,:);       
+Xi_dot_ref = Data_sh(M+1:end,:);     
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Step 1 - OPTION 2 (DATA LOADING): Load Motions from LASA Handwriting Dataset %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Choose DS LASA Dataset to load
+clear all; close all; clc
+
+% Select one of the motions from the LASA Handwriting Dataset
+sub_sample      = 3; % Each trajectory has 1000 samples when set to '1'
+nb_trajectories = 5; % Maximum 7, will select randomly if <7
+[Data, Data_sh, att, x0_all, ~, dt] = load_LASA_dataset_DS(sub_sample, nb_trajectories);
+
+% Position/Velocity Trajectories
+vel_samples = 15; vel_size = 0.5; 
+[h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
+
+% Extract Position and Velocities
+M          = size(Data,1)/2;    
+Xi_ref     = Data(1:M,:);
+Xi_dot_ref = Data(M+1:end,:);  
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 2 (GMM FITTING): Fit GMM to Trajectory Data %%
@@ -78,14 +98,14 @@ ml_plot_gmm_pdf(Xi_ref, Priors0, Mu0(1:2,:), Sigma0(1:2,1:2,:), limits)
 %% %%%%%%%%  Step 3 (DS ESTIMATION): RUN SEDS SOLVER  %%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear options;
-options.tol_mat_bias  = 10^-6;   % A very small positive scalar to avoid
-                                 % instabilities in Gaussian kernel [default: 10^-1]                             
-options.display       = 1;       % An option to control whether the algorithm
+options.tol_mat_bias  = 10^-6;    % A very small positive scalar to avoid
+                                  % instabilities in Gaussian kernel [default: 10^-1]                             
+options.display       = 1;        % An option to control whether the algorithm
                                   % displays the output of each iterations [default: true]                            
 options.tol_stopping  = 10^-9;    % A small positive scalar defining the stoppping
                                   % tolerance for the optimization solver [default: 10^-10]
 options.max_iter      = 1000;     % Maximum number of iteration forthe solver [default: i_max=1000]
-options.objective     = 'likelihood';    % 'mse'/'likelihood'
+options.objective     = 'mse';    % 'mse'/'likelihood'
 sub_sample            = 1;
 
 %running SEDS optimization solver

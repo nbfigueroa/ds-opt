@@ -25,5 +25,6 @@ if nargin > 2
     end
 else
     x_sim = [];
+    hr = [];
 end
 end

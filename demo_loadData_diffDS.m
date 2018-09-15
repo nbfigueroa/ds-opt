@@ -28,9 +28,29 @@ nb_trajectories = 0; % For real 3D data
 vel_samples = 10; vel_size = 0.5; 
 [h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
 
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Step 1 - OPTION 2 (DATA LOADING): Load Motions from LASA Handwriting Dataset %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Choose DS LASA Dataset to load
+clear all; close all; clc
+
+% Select one of the motions from the LASA Handwriting Dataset
+sub_sample      = 1; % Each trajectory has 1000 samples when set to '1'
+nb_trajectories = 5; % Maximum 7, will select randomly if <7
+[Data, Data_sh, att, x0_all, data, dt] = load_LASA_dataset_DS(sub_sample, nb_trajectories);
+
+% Position/Velocity Trajectories
+vel_samples = 15; vel_size = 0.5; 
+[h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Step 2: Estimate Diffeomorphic Matching Function Parameters  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some options
 step_demos  = 1;  %Step the points
-doNormalize = 0;  %Normalize the demos using the variance in each direction; This works better in general
+doNormalize = 0;  % Normalize the demos using the variance in each direction; This works better in general
+                  % Nadia's comment: This indeed works better but deforms
+                  % the demonstrations!
 nb_demos    = length(data);
 
 %Options concerning the transformation (NOTE:: Normalization deforms the trajectories!)
@@ -40,9 +60,6 @@ else
     optsSearch = {'maxCoef', '5', 'nb_iteration','150', 'regularise', '1e-3', 'conv_crit', '1e-6', 'division_coefList', '[3,3,2.5,2.0,1.5,1.1,1.1]', 'safeCoeffList', '0.55*[1, 1, 1, 1, 1, 1, 1]', 'doPlot', '0'};
 end
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Step 2: Estimate Diffeomorphic Matching Function Parameters  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Prepare data
 fprintf('- Preparing Data for Diffeomorphic Matching...');
 [Xinit, target_trajectory, alltarget_trajectory, alltarget_trajectoryV, allSource,  ... ,
@@ -139,7 +156,7 @@ ds_diff = @(x) diffeomorphic_ds(x-repmat(att,[1 size(x,2)]), EIG0, source, jac_i
 
 %%%%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
 simulate_reproductions = 1;
-[hd, hs, hr, x_sim] = visualizeEstimatedDS(Data(1:2,:), ds_diff, simulate_reproductions, x0_all);
+[hd, hs, hr, x_sim] = visualizeEstimatedDS(alltarget_trajectory(1:2,:), ds_diff, simulate_reproductions, Xinit);
 limits = axis;
 title('Diffeomorphic Dynamics $\dot{\xi} = A(\phi^{-1}(\xi))J_{\phi}(\phi^{-1}(\xi))\phi^{-1}(\xi) $', 'Interpreter','LaTex','FontSize',15)
 
