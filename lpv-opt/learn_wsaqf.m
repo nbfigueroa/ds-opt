@@ -32,10 +32,17 @@ options.upperBoundEigenValue = true; %This is also another added feature that is
 
 %%%%%%%%%% Initial Guess for WSAQF Parameters %%%%%%%%%% 
 if nargin >= 2
-shifts = varargin{1};    
+    shifts = varargin{1};
     if shifts == 0
-        Vxf0.Mu = zeros(2,1);
         Vxf0.L = 0;
+        if nargin == 3
+            att     = varargin{1};
+            Vxf0.Mu = att;
+            warning('Attractor given \n');
+        else
+            Vxf0.Mu = zeros(2,1);
+            warning('Attractor is origin\n');
+        end
     else
         Vxf0.L = size(shifts,2);
         Vxf0.Mu = [zeros(2,1) shifts];
@@ -43,23 +50,19 @@ shifts = varargin{1};
     Vxf0.Priors = ones(Vxf0.L+1,1);
     for l=1:Vxf0.L+1
         Vxf0.P(:,:,l) = eye(Vxf0.d);
-    end   
-    % Solving the optimization with fixed Mu
-    if nargin == 3
-        options.beta_eps = varargin{2};
-    else
-        options.beta_eps = 0;
-    end
-    Vxf = my_learnEnergy2(Vxf0,Data,options);    
-else    
-    % Solving the optimization
-    Vxf0.Mu = zeros(Vxf0.d,Vxf0.L+1);
-    Vxf0.L = 1;    
+    end    
+    options.beta_eps = 0;    
+    % Solving Nadia's Optimization
+    Vxf = my_learnEnergy2(Vxf0,Data,options);
+else
+    Vxf0.L = 0; % This has to be set somewhere  
+    Vxf0.Mu = zeros(Vxf0.d,Vxf0.L+1);     
     Vxf0.Priors = ones(Vxf0.L+1,1);
     Vxf0.Priors = Vxf0.Priors/sum(Vxf0.Priors);
     for l=1:Vxf0.L+1
         Vxf0.P(:,:,l) = eye(Vxf0.d);
     end
+    % Solving Mohi's Optimization
     Vxf = learnEnergy(Vxf0,Data,options);    
 end
 

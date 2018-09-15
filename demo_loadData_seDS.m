@@ -77,7 +77,7 @@ if do_ms_bic
     nb_gaussians = length(Priors0);
 else
     % Select manually the number of Gaussian components
-    nb_gaussians = 7;
+    nb_gaussians = 5;
 end
 
 %finding an initial guess for GMM's parameter

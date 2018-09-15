@@ -19,7 +19,7 @@ close all; clear all; clc
 % 11:    Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 2; 
+chosen_dataset  = 5; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 0; % For real 3D data
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
@@ -158,7 +158,7 @@ ds_diff = @(x) diffeomorphic_ds(x-repmat(att,[1 size(x,2)]), EIG0, source, jac_i
 simulate_reproductions = 1;
 [hd, hs, hr, x_sim] = visualizeEstimatedDS(alltarget_trajectory(1:2,:), ds_diff, simulate_reproductions, Xinit);
 limits = axis;
-title('Diffeomorphic Dynamics $\dot{\xi} = A(\phi^{-1}(\xi))J_{\phi}(\phi^{-1}(\xi))\phi^{-1}(\xi) $', 'Interpreter','LaTex','FontSize',15)
+title('Diffeomorphic Matching - Dynamics', 'Interpreter','LaTex','FontSize',15)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%

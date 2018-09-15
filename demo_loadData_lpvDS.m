@@ -15,13 +15,14 @@ close all; clear all; clc
 % 2:  L-shape Dataset       (2D) *
 % 3:  A-shape Dataset       (2D) * 
 % 4:  S-shape Dataset       (2D) * 
-% 5:  Dual-behavior Dataset (2D)
+% 5:  Dual-behavior Dataset (2D) *
 % 6:  Via-point Dataset     (3D) -- 15 trajectories recorded at 100Hz
 % 7:  Sink Dataset          (3D) -- 21 trajectories recorded at 100Hz
-% 8:  CShape top            (3D) -- 10 trajectories recorded at 100Hz
-% 9:  CShape bottom         (3D) -- 10 trajectories recorded at 100Hz
-% 10: CShape all            (3D) -- 20 trajectories recorded at 100Hz
-% 11: Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
+% 8:  CShape top            (3D) -- x trajectories recorded at 100Hz
+% 9:  CShape bottom         (3D) -- x trajectories recorded at 100Hz
+% 10: CShape all            (3D) -- x trajectories recorded at 100Hz
+% 11: Cube arranging        (3D) -- x trajectories recorded at 100Hz
+% 12: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
 chosen_dataset  = 5; 
@@ -125,13 +126,14 @@ limits = axis;
 constr_type = 2;      % 0:'convex':     A' + A < 0 (Proposed in paper)
                       % 1:'non-convex': A'P + PA < 0
                       % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
-init_cvx    = 1;      % 0/1: initialize non-cvx problem with cvx                
+init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx                
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if constr_type == 0 || constr_type == 1
     P_opt = [];
 else
-    [Vxf] = learn_wsaqf(Data, att);
-    P_opt = Vxf.P(:,:,1);
+    % P-learning works best at the origin
+    [Vxf] = learn_wsaqf(Data_sh, 0);
+    P_opt = Vxf.P;
 end
 
 %%%%%%%%  LPV system sum_{k=1}^{K}\gamma_k(xi)(A_kxi + b_k) %%%%%%%%  
