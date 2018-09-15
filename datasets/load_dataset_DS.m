@@ -55,12 +55,11 @@ else
     data_ = load(strcat(pkg_dir,'/datasets/',dataset_name));
     data = data_.data;
     N = length(data);    
-    Data = [];
-    for l=1:length(traj_ids)
-        % Gather Data
-        data_ = data{traj_ids(l)};
-        Data = [Data data_(:,1:sub_sample:end)];
-    end
     dt = 0.01;
+    for l=1:N
+        % Gather Data
+        data{l} = data{l}(:,1:sub_sample:end);
+    end
+    
 end
 end

@@ -36,7 +36,7 @@ clear all; close all; clc
 
 % Select one of the motions from the LASA Handwriting Dataset
 sub_sample      = 1; % Each trajectory has 1000 samples when set to '1'
-nb_trajectories = 7; % Maximum 7, will select randomly if <7
+nb_trajectories = 5; % Maximum 7, will select randomly if <7
 [Data, Data_sh, att, x0_all, data, dt] = load_LASA_dataset_DS(sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
