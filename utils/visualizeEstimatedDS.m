@@ -17,7 +17,7 @@ if nargin > 2
     if plot_repr
         opt_sim = [];
         opt_sim.dt = 0.01;
-        opt_sim.i_max = 3000;
+        opt_sim.i_max = 5000;
         opt_sim.tol = 0.1;
         opt_sim.plot = 0;
         [x_sim xd_sim]=Simulation(x0_all ,[],ds_fun, opt_sim);

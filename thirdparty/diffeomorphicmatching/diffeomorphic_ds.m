@@ -2,7 +2,7 @@ function [xdot] = diffeomorphic_ds(x, EIG0, PhiX, ftauJ)
 
 N = size(x,2);
 M = size(PhiX,1);
-epsilonOrig = 0.05;
+epsilonOrig = 0.005;
 Y0 = PhiX(:,1);
 epsilonTarg = epsilonOrig*norm(Y0);
 epsilonTarg_2 = epsilonTarg^2;

@@ -10,13 +10,13 @@ close all; clear all; clc
 % 2:     L-shape Dataset       (2D)
 % 3:     A-shape Dataset       (2D)
 % 4:     S-shape Dataset       (2D)
-% (N/A)  Dual-behavior Dataset (2D)
+% 5:     Dual-behavior Dataset (2D)
 % 6:     Via-point Dataset     (3D) -- 15 trajectories recorded at 100Hz
 % 7:     Sink Dataset          (3D) -- 21 trajectories recorded at 100Hz
 % 8:     CShape top            (3D) -- 10 trajectories recorded at 100Hz
 % 9:     CShape bottom         (3D) -- 10 trajectories recorded at 100Hz
-% (N/A)  CShape all            (3D) -- 20 trajectories recorded at 100Hz
-% (N/A)  Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
+% 10:    CShape all            (3D) -- 20 trajectories recorded at 100Hz
+% 11:    Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
 chosen_dataset  = 2; 
@@ -36,7 +36,7 @@ clear all; close all; clc
 
 % Select one of the motions from the LASA Handwriting Dataset
 sub_sample      = 1; % Each trajectory has 1000 samples when set to '1'
-nb_trajectories = 5; % Maximum 7, will select randomly if <7
+nb_trajectories = 7; % Maximum 7, will select randomly if <7
 [Data, Data_sh, att, x0_all, data, dt] = load_LASA_dataset_DS(sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
@@ -162,7 +162,8 @@ title('Diffeomorphic Dynamics $\dot{\xi} = A(\phi^{-1}(\xi))J_{\phi}(\phi^{-1}(\
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% NOTE: THIS WILL NOT WORK IF YOU NORMALIZE
 %% Compute Errors
 % Compute RMSE on training data
 rmse = mean(rmse_error(ds_diff, Data(1:2,:), Data(3:4,:)));

@@ -11,15 +11,17 @@ switch dataset
     case 4
         dataset_name = '2D_Sshape.mat';
     case 5
+        dataset_name = '2D_multi-behavior.mat';
+    case 6
         dataset_name = '3D_viapoint_2.mat';
         traj_ids = [1 2];
-    case 6
-        dataset_name = '3D_sink.mat';
     case 7
+        dataset_name = '3D_sink.mat';
+    case 8
         dataset_name = '3D_bumpy-snake.mat';
-    case 8 
+    case 9 
         dataset_name = '3D_Cshape_top.mat';
-    case 9
+    case 10
         dataset_name = '3D_Cshape_bottom.mat';               
 end
 
@@ -39,7 +41,7 @@ if dataset == 1
     dt = abs((data_12(1,1) - data_12(1,2))/data_12(3,1));
 
 % Processing for the 2D Datasets
-elseif dataset <= 4
+elseif dataset <= 5
     data_ = load(strcat(pkg_dir,'/datasets/',dataset_name));
     data = data_.data;    
     % Computing the attractor and shifting all the trajectories

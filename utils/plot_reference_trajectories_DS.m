@@ -25,10 +25,10 @@ if M == 2
     ylabel('$\xi_2$','Interpreter','LaTex','FontSize',20);
     
 elseif M == 3
-    
+    axis equal;
 else
     warning('Dimensionality not supported');
 end
-axis equal;
+
 
 end
