@@ -41,7 +41,7 @@ These examples + more datasets are provided in ```
   
 -  **2D Multi-Behavior (Single Target) Dataset**  
 <p align="center">
-  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_seds.png" width="220">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_seds.png" width="215">
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_lpv01.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_lpv03.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_diff.png" width="220">
 </>  
   
