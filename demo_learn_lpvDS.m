@@ -25,9 +25,9 @@ close all; clear all; clc
 % 12: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 7; 
-sub_sample      = 3; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 5; % For real 3D data only
+chosen_dataset  = 9; 
+sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
+nb_trajectories = 10; % For real 3D data only
 [Data, Data_sh, att, x0_all, ~, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
@@ -79,11 +79,11 @@ est_options.samplerIter      = 20;  % Maximum Sampler Iterations
                                     % For type 2: >100 iter are needed
                                     
 est_options.do_plots         = 1;   % Plot Estimation Statistics
-est_options.sub_sample       = 1;   % Size of sub-sampling of trajectories
+est_options.sub_sample       = 3;   % Size of sub-sampling of trajectories
                                     % 1/2 for 2D datasets, >2/3 for real    
 % Metric Hyper-parameters
 est_options.estimate_l       = 1;   % '0/1' Estimate the lengthscale, if set to 1
-est_options.l_sensitivity    = 10;   % lengthscale sensitivity [1-10->>100]
+est_options.l_sensitivity    = 2;   % lengthscale sensitivity [1-10->>100]
                                     % Default value is set to '2' as in the
                                     % paper, for very messy, close to
                                     % self-interescting trajectories, we
@@ -122,7 +122,7 @@ limits = axis;
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%
 % Type of constraints/optimization 
-constr_type = 0;      % 0:'convex':     A' + A < 0 (Proposed in paper)
+constr_type = 1;      % 0:'convex':     A' + A < 0 (Proposed in paper)
                       % 1:'non-convex': A'P + PA < 0
                       % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
 init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx                
@@ -143,45 +143,19 @@ else
     [A_g, b_g, P_est] = optimize_lpv_ds_from_data(Data, att, constr_type, ds_gmm, P_opt, init_cvx);
     ds_lpv = @(x) lpv_ds(x, ds_gmm, A_g, b_g);
 end
-eig(P_opt)
 
 %% %%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
-if M == 2    
-    simulate_reproductions = 1;
-    [hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_lpv, simulate_reproductions, x0_all);
-    limits = axis;    
-elseif M == 3    
-    fig1 = figure('Color',[1 1 1]);    
-    
-    % Plot Demonstrations in red
-    plot3(Data(1,:),Data(2,:),Data(3,:),'r.','markersize',10); hold on;
-    limits = axis;
+% Fill in plotting options
+ds_plot_options = [];
+ds_plot_options.sim_traj  = 1;            % To simulate trajectories from x0_all
+ds_plot_options.x0_all    = x0_all;       % Intial Points
+ds_plot_options.init_type = 'ellipsoid';  % For 3D DS, to initialize streamlines
+                                          % 'ellipsoid' or 'cube'  
+ds_plot_options.nb_points = 30;           % No of streamlines to plot (3D)
+ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
 
-    % Compute Start Locations for Streamlines
-    start_mu    = mean(x0_all,2);
-    start_sigma = my_covariance( x0_all, start_mu, 'full' );
-    [V,D]       = eig(start_sigma);
-    [val_d idx]= sort(diag(D));
-    D = diag(val_d);
-    V = V(:,idx');
-    start_sigma = V*((D + 1e-3*eye(M))*diag([10,5,2]))*V'; 
-    start_pnts  = draw_from_ellipsoid(start_sigma, start_mu, 30);
-
-    % Plot Streamlines in blue and simulations in black
-    [hs] = plot_ds_model_3D(fig1, ds_lpv, [0;0;0], limits, start_pnts, 'low'); hold on;    
-
-    % Simulate trajectories and plot them on top
-    plot_repr = 1;
-    if plot_repr
-        opt_sim = [];
-        opt_sim.dt = 0.01;
-        opt_sim.i_max = 3000;
-        opt_sim.tol = 0.001;
-        opt_sim.plot = 0;
-        [x_sim ~]=Simulation(x0_all ,[0;0;0], ds_lpv, opt_sim);
-        [hr] = plot3(x_sim(1,:),x_sim(2,:),x_sim(3,:),'k.','markersize',10); hold on;
-    end   
-end   
+[hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_lpv, ds_plot_options);
+limits = axis;
 
 switch constr_type
     case 0
@@ -191,6 +165,8 @@ switch constr_type
     case 2
         title('GMM-based LPV-DS with P-QLF', 'Interpreter','LaTex','FontSize',20)
 end
+
+%% %%%%%%%%%%%%   Export DS parameters to YAML file  %%%%%%%%%%%%%%%%%%%
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
