@@ -1,9 +1,12 @@
 function [A_c, b_c, P] = optimize_lpv_ds_from_data(Data, attractor, ctr_type, gmm, varargin)
 
+% Dimensionality
+[M, N] = size(Data);
+M = M/2;
+
 % Positions and Velocity Trajectories
-Xi_ref = Data(1:2,:);
-Xi_ref_dot = Data(3:4,:);
-[N,M] = size(Xi_ref_dot);
+Xi_ref = Data(1:M,:);
+Xi_ref_dot = Data(M+1:end,:);
 
 % Define Optimization Variables
 sdp_options = []; Constraints = [];
@@ -12,8 +15,8 @@ init_cvx = 0;
 
 % Define DS Variables
 K = length(gmm.Priors);
-A_c = zeros(N,N,K);
-b_c = zeros(N,K);
+A_c = zeros(M,M,K);
+b_c = zeros(M,K);
 
 % Define solver for type of constraints
 switch ctr_type
@@ -24,9 +27,9 @@ switch ctr_type
     case 1
         % 'penlab': Nonlinear semidefinite programming solver
         sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1);
-        P_var = sdpvar(N, N, 'symmetric','real');
-        Constraints = [Constraints, P_var >  eye(N,N)];
-        assign(P_var,eye(N));
+        P_var = sdpvar(M, M, 'symmetric','real');
+        Constraints = [Constraints, P_var >  eye(M,M)];
+        assign(P_var,eye(M));
         init_cvx = varargin{2};
         
     case 2
@@ -47,57 +50,55 @@ h_k = posterior_probs_gmm(Xi_ref,gmm,'norm');
 
 % Define Constraints and Assign Initial Values
 for k = 1:K    
-    A_vars{k} = sdpvar(N, N, 'full','real');       
-    b_vars{k} = sdpvar(N, 1, 'full');
-    Q_vars{k} = sdpvar(N, N,'symmetric','real');       
+    A_vars{k} = sdpvar(M, M, 'full','real');       
+    b_vars{k} = sdpvar(M, 1, 'full');
+    Q_vars{k} = sdpvar(M, M,'symmetric','real');       
        
     % Assign Initial Parameters
     if init_cvx       
         assign(A_vars{k},A0(:,:,k));
         assign(b_vars{k},b0(:,k));        
     else
-        assign(A_vars{k},-eye(N));
-        assign(b_vars{k},-eye(N)*attractor);
+        assign(A_vars{k},-eye(M));
+        assign(b_vars{k},-eye(M)*attractor);
     end
     
     % Define Constraints
     switch ctr_type
         case 0 %: convex
-            Constraints = [Constraints transpose(A_vars{k}) + A_vars{k} <= -epsilon*eye(N,N)]; 
+            Constraints = [Constraints transpose(A_vars{k}) + A_vars{k} <= -epsilon*eye(M,M)]; 
             Constraints = [Constraints b_vars{k} == -A_vars{k}*attractor];
         
-        case 1 %: non-convex, unknown P            
-            Constraints = [Constraints, transpose(A_vars{k})*P_var + P_var*A_vars{k} <= -epsilon*eye(N)];           
-            % This doesn't work, we have to shift the dataset to the origin
-%             Constraints = [Constraints, b_vars{k} == -A_vars{k}*attractor];            
+        case 1 %: non-convex, unknown P (Dataset assumed to be shifted to the origin)            
+            Constraints = [Constraints, transpose(A_vars{k})*P_var + P_var*A_vars{k} <= -epsilon*eye(M)];                      
 
         case 2 %: non-convex with given P
             
             % Option 2: Less Strict and converges faster most of the times                      
             Constraints = [Constraints, transpose(A_vars{k})*P + P*A_vars{k} == Q_vars{k}];                        
-            Constraints = [Constraints, Q_vars{k} <= -epsilon*eye(N)];                        
+            Constraints = [Constraints, Q_vars{k} <= -epsilon*eye(M)];                        
             Constraints = [Constraints, b_vars{k} == -A_vars{k}*attractor];                                 
-            assign(Q_vars{k},-eye(N));
+            assign(Q_vars{k},-eye(M));
             
     end
 end
 
 % Calculate our estimated velocities caused by each local behavior
-Xi_d_dot_c_raw = sdpvar(N,M,K, 'full');%zeros(size(Qd));
+Xi_d_dot_c_raw = sdpvar(M,N,K, 'full');%zeros(size(Qd));
 for k = 1:K
-    h_K = repmat(h_k(k,:),[N 1]);
+    h_K = repmat(h_k(k,:),[M 1]);
     if ctr_type == 1
         f_k = A_vars{k}*Xi_ref;     
     else
-        f_k = A_vars{k}*Xi_ref + repmat(b_vars{k},[1 M]);
+        f_k = A_vars{k}*Xi_ref + repmat(b_vars{k},[1 N]);
     end
     Xi_d_dot_c_raw(:,:,k) = h_K.*f_k;
 end
 
 % Sum each of the local behaviors to generate the overall behavior at
 % each point
-Xi_d_dot = sdpvar(N, M, 'full');
-Xi_d_dot = reshape(sum(Xi_d_dot_c_raw,3),[N M]);
+Xi_d_dot = sdpvar(M, N, 'full');
+Xi_d_dot = reshape(sum(Xi_d_dot_c_raw,3),[M N]);
 
 % Then calculate the difference between approximated velocities
 % and the demonstated ones for A
@@ -106,12 +107,12 @@ Xi_dot_error = Xi_d_dot - Xi_ref_dot;
 % Defining Objective Function depending on constraints
 if ctr_type == 0
     Xi_dot_total_error = sdpvar(1,1); Xi_dot_total_error(1,1) = 0;
-    for m = 1:M
-        Xi_dot_total_error = Xi_dot_total_error + norm(Xi_dot_error(:, m));
+    for n = 1:N
+        Xi_dot_total_error = Xi_dot_total_error + norm(Xi_dot_error(:, n));
     end
     Objective = Xi_dot_total_error;
 else
-    Aux_var     = sdpvar(N,length(Xi_dot_error));
+    Aux_var     = sdpvar(M,length(Xi_dot_error));
     Objective   = sum((sum(Aux_var.^2)));
     Constraints = [Constraints, Aux_var == Xi_dot_error];
 end
@@ -129,10 +130,10 @@ end
 
 switch ctr_type 
     case 0 
-        P = eye(N);
+        P = eye(M);
     case 1
-        P = value(P_var);
-        b_g = zeros(2,K);
+        P   = value(P_var);
+        b_g = zeros(M,K);
 end
 
 sol.info

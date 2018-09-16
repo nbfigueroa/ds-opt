@@ -19,11 +19,11 @@ for l=1:N
     Data = [Data data_];
     
     % All starting position for reproduction accuracy comparison
-    x0_all = [x0_all data_(1:2,1)];
+    x0_all = [x0_all data_(1:M,1)];
     
     % Shift data to origin for Sina's approach + SEDS
     data_(1:M,:) = data_(1:M,:) - repmat(att, [1 length(data_)]);
-    data_(M+1:end,end) = zeros(2,1);
+    data_(M+1:end,end) = zeros(M,1);
     
     Data_sh = [Data_sh data_];
     

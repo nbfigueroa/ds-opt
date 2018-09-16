@@ -31,5 +31,5 @@ vel_samples = 10; vel_size = 0.5;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% To use this dataset go to the demo_loadData_*.m scripts %
-%% and start on the second block of code                   %
+%% and start with the[Step 2] block of code                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

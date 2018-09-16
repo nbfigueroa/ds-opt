@@ -13,15 +13,13 @@ switch dataset
     case 5
         dataset_name = '2D_multi-behavior.mat';
     case 6
-        dataset_name = '3D_viapoint_2.mat';
+        dataset_name = '3D_viapoint_1.mat';
     case 7
         dataset_name = '3D_sink.mat';
-    case 8
-        dataset_name = '3D_bumpy-snake.mat';
-    case 9 
+    case 8 
         dataset_name = '3D_Cshape_top.mat';
-    case 10
-        dataset_name = '3D_Cshape_bottom.mat';               
+    case 9
+        dataset_name = '3D_Cshape_bottom.mat';                       
 end
 
 if isempty(sub_sample)
@@ -53,13 +51,14 @@ elseif dataset <= 5
 % Processing for the 3D Datasets
 else
     data_ = load(strcat(pkg_dir,'/datasets/',dataset_name));
-    data = data_.data;
-    N = length(data);    
-    dt = 0.01;
-    for l=1:N
+    data_ = data_.data;
+    N = length(data_);    
+    data = []; dt = 0.01;
+    traj = randsample(N, nb_trajectories)'
+    for l=1:nb_trajectories
         % Gather Data
-        data{l} = data{l}(:,1:sub_sample:end);
+        data{l} = data_{traj(l)}(:,1:sub_sample:end);
     end
-    
+    [Data, Data_sh, att, x0_all, ~] = processDataStructure(data);
 end
 end

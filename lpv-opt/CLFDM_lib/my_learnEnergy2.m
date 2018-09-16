@@ -247,16 +247,14 @@ dceq = [];
 if L == -1 %SOS
     c = -eig(Vxf.P + Vxf.P' - eye(Vxf.n*d)*options.tol_mat_bias);
 else
-    %     ceq = 1;
-    scalar = 5;
+   % Nadia's changes: Bound Trace of Eigenvalues
+    scalar = d^2;
     for k = 0:L
         lambda = eig(Vxf.P(:,:,k+1) + Vxf.P(:,:,k+1)')/2;
-        c(k*d+1:(k+1)*d) = -lambda + options.tol_mat_bias;
-        % Nadia's changes: Bound Trace of Eigenvalues
+        c(k*d+1:(k+1)*d) = -lambda + options.tol_mat_bias;        
         if options.upperBoundEigenValue
             if (k == 0)
                 if L == 0
-%                     scalar = 2;
                     ceq(k+1) = scalar - sum(lambda);
                 else
                     ceq(k+1) = (scalar*2*L) - sum(lambda); % + Vxf.P(:,:,k+1)'
