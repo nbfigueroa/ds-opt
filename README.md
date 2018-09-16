@@ -25,25 +25,25 @@ There are three important demo scripts:
 
 ### Example Datasets
 These examples + more datasets are provided in ```
-./datasets``` folder. Following we show some **notably challenging motions** that cannot be accurately encoded with SEDS [3] **(1st Column)** or a PC-GMM-based LPV-DS [1] with a simple Quadradtic Lyapunov Function (QLF) **(2nd Column)**, yet can be correctly encoded with the proposed PC-GMM-based LPV-DS with a parametrized QLF (P-QLF) [1] **(3rd Column)** yielding comparable (in some cases BETTER) results than the global diffeomorphic matching approach **(4th Column)**, which is the state-of-the-art approach known to outperform SEDS.
+./datasets``` folder. Following we show some **notably challenging motions** that cannot be accurately encoded with SEDS [3] **(1st Column)** or a PC-GMM-based LPV-DS [1] with a simple Quadradtic Lyapunov Function (QLF) **(2nd Column)**, yet can be correctly encoded with the proposed PC-GMM-based LPV-DS with a parametrized QLF (P-QLF) [1] **(3rd Column)** yielding comparable **(in some cases BETTER)** results than the global diffeomorphic matching approach **(4th Column)**, which is the state-of-the-art approach known to outperform SEDS.
+
+-  **2D S-shape Dataset**  
+<p align="center">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_seds.png" width="220">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_diff.png" width="210">
+</>
+
+-  **2D Multi-Behavior (Single Target) Dataset**  
+<p align="center">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_seds.png" width="215">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_lpv01.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_lpv03.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_diff.png" width="220">
+</>  
 
 -  **2D Messy Snake Dataset**  
 <p align="center">
   <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Messy-snake_seds.png" width="215">
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Messy-snake_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Messy-snake_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Messy-snake_diff.png" width="225">
 </>
-
--  **2D S-shape Dataset**  
-<p align="center">
-  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_seds.png" width="220">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_diff.png" width="215">
-</>
-  
--  **2D Multi-Behavior (Single Target) Dataset**  
-<p align="center">
-  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_seds.png" width="215">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_lpv01.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_lpv03.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Multi_diff.png" width="220">
-</>  
   
 -  **2D SharpC-shape from LASA Handwriting Dataset**  
 <p align="center">
@@ -54,7 +54,7 @@ These examples + more datasets are provided in ```
 -  **2D N-shape from LASA Handwriting Dataset**  
 <p align="center">
   <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_seds.png" width="220">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_lpvO1.png" width="225"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_lpvO3.png" width="215"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_diff.png" width="220">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_lpvO1.png" width="225"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Nshape_diff.png" width="210">
 </>
 
 
