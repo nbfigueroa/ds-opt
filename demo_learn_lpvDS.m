@@ -25,9 +25,9 @@ close all; clear all; clc
 % 12: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 9; 
-sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 12; % For real 3D data only
+chosen_dataset  = 8; 
+sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
+nb_trajectories = 10; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
@@ -115,7 +115,7 @@ if adjusts_C  == 1
     if M == 2
         tot_dilation_factor = 1; rel_dilation_fact = 0.25;
     elseif M == 3
-        tot_dilation_factor = 1.25; rel_dilation_fact = 0.5;        
+        tot_dilation_factor = 1; rel_dilation_fact = 0.5;        
     end
     Sigma_ = adjust_Covariances(ds_gmm.Priors, ds_gmm.Sigma, tot_dilation_factor, rel_dilation_fact);
     ds_gmm.Sigma = Sigma_;
@@ -133,7 +133,7 @@ end
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%%% 
 % Type of constraints/optimization 
-constr_type = 0;      % 0:'convex':     A' + A < 0 (Proposed in paper)
+constr_type = 2;      % 0:'convex':     A' + A < 0 (Proposed in paper)
                       % 1:'non-convex': A'P + PA < 0 (Sina's Thesis approach - not suitable for 3D)
                       % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
 init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx                
@@ -177,7 +177,7 @@ switch constr_type
 end
 
 %% %%%%%%%%%%%%   Export DS parameters to Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-CShape-top_pqlf_2';
+DS_name = '3D-CShape-top_qlf_2';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

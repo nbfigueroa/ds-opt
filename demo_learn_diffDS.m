@@ -31,7 +31,7 @@ dim =size(data{1},1)/2;
 nb_demos    = length(data);
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned SEDS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-Via-point_diff';
+DS_name = '3D-CShape-top_diff';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 
