@@ -38,7 +38,7 @@ Xi_ref     = Data_sh(1:M,:);
 Xi_dot_ref = Data_sh(M+1:end,:);     
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned SEDS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-CShape-top_seds';
+DS_name = '3D-CShape-bottom_seds';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:M,M+1:2*M);

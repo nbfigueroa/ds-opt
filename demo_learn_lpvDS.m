@@ -40,7 +40,7 @@ Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);   
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned lpv-DS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-CShape-top_qlf_1';
+DS_name = '3D-CShape-bottom_pqlf_2';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 if constr_type == 1
