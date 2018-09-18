@@ -25,7 +25,7 @@ close all; clear all; clc
 % 12: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 7; 
+chosen_dataset  = 6; 
 sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 10; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
@@ -40,7 +40,7 @@ Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);       
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned lpv-DS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-Sink_qlf_2';
+DS_name = '3D-Via-point_qlf_1';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 if constr_type == 1
@@ -89,7 +89,7 @@ est_options.samplerIter      = 40;  % Maximum Sampler Iterations
                                     % For type 2: >100 iter are needed
                                     
 est_options.do_plots         = 1;   % Plot Estimation Statistics
-est_options.sub_sample       = 3;   % Size of sub-sampling of trajectories
+est_options.sub_sample       = 2;   % Size of sub-sampling of trajectories
                                     % 1/2 for 2D datasets, >2/3 for real    
 % Metric Hyper-parameters
 est_options.estimate_l       = 1;   % '0/1' Estimate the lengthscale, if set to 1
@@ -177,7 +177,7 @@ switch constr_type
 end
 
 %% %%%%%%%%%%%%   Export DS parameters to Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-CShape-top_qlf_2';
+DS_name = '3D-CShape-top_pqlf_1';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
