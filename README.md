@@ -82,6 +82,16 @@ These examples + more datasets are provided in ```
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_diff.png" width="270">
 </>
   
+-  **3D Cshape-top Motion for "Shelf Arranging" Task**  
+<p align="center">  
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario3_top_demo.gif" width="290">
+</>
+  
+-  **3D Cshape-botton Motion for "Shelf Arranging" Task**  
+<p align="center">  
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario3_bottom_demo.gif" width="290">
+</>  
+  
 **References**     
 > [1] Figueroa, N. and Billard, A. (2018) A Physically-Consistent Bayesian Non-Parametric Mixture Model for Dynamical System Learning. In Proceedings of the 2nd Conference on Robot Learning (CoRL). Accepted.     
 > [2] Khansari Zadeh, S. M. and Billard, A. (2011) Learning Stable Non-Linear Dynamical Systems with Gaussian Mixture Models. IEEE Transaction on Robotics, vol. 27, num 5, p. 943-957.    
