@@ -1,4 +1,4 @@
-top# ds-opt
+# ds-opt
 Toolbox including optimization techniques for estimation of Globally Asymptotically Stable Dynamical Systems focused on (1) Linear Parameter Varying formulation with GMM-based mixing function and different Lyapunov candidate functions as proposed in [1]. For comparison purposes, this toolbox also includes implementations and demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].
 
 <p align="center">
