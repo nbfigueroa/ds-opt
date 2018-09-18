@@ -78,7 +78,7 @@ These examples + more datasets are provided in ```
 
 -  **3D Sink Motion for "Production Line" Task**  
 <p align="center">
-  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_pc-gmm.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO3.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario1_demo.gif" width="290">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_pc-gmm.png" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO3.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario1_demo.gif" width="290">
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_diff.png" width="270">
 </>
   
