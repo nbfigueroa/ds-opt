@@ -19,15 +19,15 @@ close all; clear all; clc
 % 6:  Via-point Dataset     (3D) * 15 trajectories recorded at 100Hz
 % 7:  Sink Dataset          (3D) * 11 trajectories recorded at 100Hz
 % 8:  CShape bottom         (3D) * 16 trajectories recorded at 100Hz
-% 9:  CShape top            (3D) * 16 trajectories recorded at 100Hz
+% 9:  CShape top            (3D) * 12 trajectories recorded at 100Hz
 % 10: CShape all            (3D) -- x trajectories recorded at 100Hz
 % 11: Cube arranging        (3D) -- x trajectories recorded at 100Hz
 % 12: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 6; 
-sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 10; % For real 3D data only
+chosen_dataset  = 9; 
+sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
+nb_trajectories = 12; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
@@ -37,10 +37,10 @@ vel_samples = 10; vel_size = 0.5;
 % Extract Position and Velocities
 M          = size(Data,1)/2;    
 Xi_ref     = Data(1:M,:);
-Xi_dot_ref = Data(M+1:end,:);       
+Xi_dot_ref = Data(M+1:end,:);   
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned lpv-DS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-Via-point_qlf_1';
+DS_name = '3D-CShape-top_qlf_1';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 if constr_type == 1
@@ -177,7 +177,7 @@ switch constr_type
 end
 
 %% %%%%%%%%%%%%   Export DS parameters to Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-CShape-top_pqlf_1';
+DS_name = '3D-CShape-top_pqlf_2';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

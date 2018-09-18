@@ -17,9 +17,9 @@ switch dataset
     case 7
         dataset_name = '3D_sink.mat';
     case 8 
-        dataset_name = '3D_Cshape_top.mat';
+        dataset_name = '3D_Cshape_bottom.mat';
     case 9
-        dataset_name = '3D_Cshape_bottom.mat';                       
+        dataset_name = '3D_Cshape_top.mat';                       
 end
 
 if isempty(sub_sample)
@@ -54,7 +54,7 @@ else
     data_ = data_.data;
     N = length(data_);    
     data = []; dt = 0.01;
-    traj = randsample(N, nb_trajectories)';
+    traj = randsample(N, nb_trajectories)'
     for l=1:nb_trajectories
         % Gather Data
         data{l} = data_{traj(l)}(:,1:sub_sample:end);
