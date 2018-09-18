@@ -84,7 +84,7 @@ These examples + more datasets are provided in ```
   
 -  **3D Cshape-top Motion for "Shelf Arranging" Task**  
 <p align="center">  
-  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario3_top_demo.gif" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-CShape-top_lpvO1.png" width="250"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-CShape-top_lpvO3.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-CShape-top_pcgmm.png" width="290">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario3_top_demo.gif" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-CShape-top_lpvO1.png" width="250"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-CShape-top_lpvO3.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-CShape-top_pcgmm.png" width="280">
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-CShape-top_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-CShape-top_diff.png" width="270">
 </>  
   
