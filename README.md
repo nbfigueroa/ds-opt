@@ -67,11 +67,15 @@ These examples + more datasets are provided in ```
 -  **2D Snake-shape from LASA Handwriting Dataset**  
 <p align="center">
   <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_seds.png" width="220">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_diff.png" width="220">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_diff.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_diff.png" width="220">
 </>
   
-
-
+-  **3D Sink Motion for "Inspection Line" Task**  
+<p align="center">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="300">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_seds.png" width="300"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_lpvO3.png" width="300"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="300"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO1.png" width="300"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO3.png" width="300">
+</>
+  
 **References**     
 > [1] Figueroa, N. and Billard, A. (2018) A Physically-Consistent Bayesian Non-Parametric Mixture Model for Dynamical System Learning. In Proceedings of the 2nd Conference on Robot Learning (CoRL). Accepted.     
 > [2] Khansari Zadeh, S. M. and Billard, A. (2011) Learning Stable Non-Linear Dynamical Systems with Gaussian Mixture Models. IEEE Transaction on Robotics, vol. 27, num 5, p. 943-957.    
