@@ -70,6 +70,8 @@ These examples + more datasets are provided in ```
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_lpvO1.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_diff.png" width="220">
 </>
   
+The following 3D datasets where collected via kinesthetic teaching of a KUKA LWR 4+ robot and processed using the code provided in the [easy-kinesthetic-recording](https://github.com/nbfigueroa/easy-kinesthetic-recording) package.  
+
 -  **3D Sink Motion for "Inspection Line" Task**  
 <p align="center">
   <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario2_demo.gif" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO3.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="270">
