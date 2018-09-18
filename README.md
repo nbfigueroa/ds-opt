@@ -1,4 +1,4 @@
-# ds-opt
+top# ds-opt
 Toolbox including optimization techniques for estimation of Globally Asymptotically Stable Dynamical Systems focused on (1) Linear Parameter Varying formulation with GMM-based mixing function and different Lyapunov candidate functions as proposed in [1]. For comparison purposes, this toolbox also includes implementations and demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].
 
 <p align="center">
@@ -72,14 +72,14 @@ These examples + more datasets are provided in ```
   
 -  **3D Sink Motion for "Inspection Line" Task**  
 <p align="center">
-  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario2_demo.gif" width="290">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_diff.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO3.png" width="270">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario2_demo.gif" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO3.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="270">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_diff.png" width="270">
 </>
 
 -  **3D Sink Motion for "Production Line" Task**  
 <p align="center">
-  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario1_demo.gif" width="290">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_diff.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_pc-gmm.png" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO3.png" width="270">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario1_demo.gif" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO3.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_pc-gmm.png" width="290">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_diff.png" width="270">
 </>
   
 **References**     
