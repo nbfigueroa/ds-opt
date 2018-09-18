@@ -72,8 +72,8 @@ These examples + more datasets are provided in ```
   
 -  **3D Sink Motion for "Inspection Line" Task**  
 <p align="center">
-  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="300">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_seds.png" width="300"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/LASASnake_lpvO3.png" width="300"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="300"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO1.png" width="300"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO3.png" width="300">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="250">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_seds.png" width="250"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_seds.png" width="250"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="250"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO1.png" width="250"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO3.png" width="250">
 </>
   
 **References**     
