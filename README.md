@@ -75,6 +75,12 @@ These examples + more datasets are provided in ```
   <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario2_demo.gif" width="290">
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_diff.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_pc-gmm.png" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_lpvO3.png" width="270">
 </>
+
+-  **3D Sink Motion for "Production Line" Task**  
+<p align="center">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario1_demo.gif" width="290">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_diff.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_pc-gmm.png" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO3.png" width="270">
+</>
   
 **References**     
 > [1] Figueroa, N. and Billard, A. (2018) A Physically-Consistent Bayesian Non-Parametric Mixture Model for Dynamical System Learning. In Proceedings of the 2nd Conference on Robot Learning (CoRL). Accepted.     
