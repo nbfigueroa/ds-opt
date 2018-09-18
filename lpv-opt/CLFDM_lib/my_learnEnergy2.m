@@ -248,7 +248,7 @@ if L == -1 %SOS
     c = -eig(Vxf.P + Vxf.P' - eye(Vxf.n*d)*options.tol_mat_bias);
 else
    % Nadia's changes: Bound Trace of Eigenvalues
-    scalar = d^2;
+    scalar = d^3;
     for k = 0:L
         lambda = eig(Vxf.P(:,:,k+1) + Vxf.P(:,:,k+1)')/2;
         c(k*d+1:(k+1)*d) = -lambda + options.tol_mat_bias;        

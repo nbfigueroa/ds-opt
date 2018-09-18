@@ -1,4 +1,4 @@
-function [Data, Data_sh, att, x0_all, dt] = processDataStructure(data)
+function [Data, Data_sh, att, x0_all, dt, data] = processDataStructure(data)
 % Computing the attractor and shifting all the trajectories
 N = length(data);att_ = [];
 M = size(data{1},1)/2;

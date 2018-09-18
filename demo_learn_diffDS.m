@@ -19,14 +19,21 @@ close all; clear all; clc
 % 11:    Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 5; 
-sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 0; % For real 3D data
+chosen_dataset  = 9; 
+sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
+nb_trajectories = 10; % For real 3D data
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
 vel_samples = 10; vel_size = 0.5; 
 [h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
+dim =size(data{1},1)/2;
+nb_demos    = length(data);
+
+%% %%%%%%%%%%%% [Optional] Load pre-learned SEDS model from Mat file  %%%%%%%%%%%%%%%%%%%
+DS_name = '3D-Sink_diff';
+matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
+load(matfile)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 1 - OPTION 2 (DATA LOADING): Load Motions from LASA Handwriting Dataset %%
@@ -42,6 +49,8 @@ nb_trajectories = 5; % Maximum 7, will select randomly if <7
 % Position/Velocity Trajectories
 vel_samples = 15; vel_size = 0.5; 
 [h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
+dim =size(data{1},1)/2;
+nb_demos    = length(data);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Step 2: Estimate Diffeomorphic Matching Function Parameters  %%
@@ -51,7 +60,6 @@ step_demos  = 1;  %Step the points
 doNormalize = 0;  % Normalize the demos using the variance in each direction; This works better in general
                   % Nadia's comment: This indeed works better but deforms
                   % the demonstrations!
-nb_demos    = length(data);
 
 %Options concerning the transformation (NOTE:: Normalization deforms the trajectories!)
 if doNormalize
@@ -74,7 +82,14 @@ target_trajectoryV = [diff(target_trajectory,[],2),zeros(dim,1)]./dt;
 
 %Define the source trajectory: A straight line between the initial and
 %final point of the mean target_trajectory trajectory
-source = [linspace(target_trajectory(1,1), target_trajectory(1,end), lX); linspace(target_trajectory(2,1), target_trajectory(2,end), lX)];
+if dim == 2
+    source = [linspace(target_trajectory(1,1), target_trajectory(1,end), lX);
+              linspace(target_trajectory(2,1), target_trajectory(2,end), lX)];
+elseif dim == 3
+    source = [linspace(target_trajectory(1,1), target_trajectory(1,end), lX);
+              linspace(target_trajectory(2,1), target_trajectory(2,end), lX);
+              linspace(target_trajectory(3,1), target_trajectory(3,end), lX);];
+end
 sourceV = [diff(source, [], 2).*(step_demos/dt), zeros(dim,1)];
 
 % Sub-sample source/target_trajectory trajectories depending on the step-size
@@ -89,10 +104,6 @@ if doNormalize
         alltarget_trajectoryV, allSource, allSourceV] = normalizeTrajectories(Xinit, target_trajectory, ... ,
         target_trajectoryV, source, sourceV, alltarget_trajectory, alltarget_trajectoryV, allSource, allSourceV);
 end
-
-%Max for plotting
-XLimPlot = [min([1.2*alltarget_trajectory, 0.8*alltarget_trajectory, -.25*ones(dim,1)],[], 2), max([1.2*alltarget_trajectory, 0.8*alltarget_trajectory, .25*ones(dim,1)],[],2)];
-XLimPlot2 = [min([1.2*allSource, 0.8*allSource, -.25*ones(dim,1)],[], 2), max([1.2*allSource, 0.8*allSource, .25*ones(dim,1)],[],2)];
 
 %Search for the transformation parameters
 fprintf('- Searching for Transformation Parameters...');
@@ -111,54 +122,32 @@ jac_inverse_diff_fun = @(pt) result_function_reverse_Jac(centers, target_traject
 
 %%%%%%%%%%%% General plot with the transformed sources and target_trajectorys %%%%%%%%%%%%
 close all;
-fig1 = figure('Color',[1 1 1]); hold all;
-% Demonstrated Mean Trajectory \xi
-scatter(target_trajectory(1,:),target_trajectory(2,:), 20, [1 0 0],'filled');
-if nDemos > 1
-    % All Demonstrated Trajectories \xi
-    scatter(alltarget_trajectory(1,:),alltarget_trajectory(2,:), 10, [0 0 0],'filled');
-end
-% Virtual Trajectory \chi
-scatter(source(1,:),source(2,:), 20, [0 0 1], 'filled'); hold on;
-
-% Demonstrated Trajectory transformed to Virtual through \phi^-1(\xi)
-invPhiTarg = inverse_diff_fun(target_trajectory);%Applying the inverse transformation to the mean target_trajectory
-scatter(invPhiTarg(1,:), invPhiTarg(2,:), 20, [0 0.5 1], '+'); hold on;
-
-% Virtual Trajectory transformed to Demonstration through \\phi(\chi)
-PhiSrc = diff_fun(source);
-scatter(PhiSrc(1,:), PhiSrc(2,:), 20, [1 0.5 0], '+'); hold on;
-
-% Plotting the deformed grid through the diffeomorphism
-plotGrid(1, XLimPlot2, 10, 1000, diff_fun);
-if nDemos > 1    
-legend({'Mean Demo trajectory $\Xi=\{\xi_1,\dots,\xi_T\}$','Demonstrated trajectories $\Xi=\{\xi_1,\dots,\xi_T\}$', ... , 
-    'Virtual Linear Trajectory $\chi=\{\chi_1,\dots,\chi_T\}$', ...    
-    'Transformed Demonstrated Trajectory $\Phi^{-1}(\Xi)=\{\phi^{-1}(\xi_1),\dots,\phi^{-1}(\xi_T)\}$',...
-    'Transformed Virtual Trajectory $\Phi(\chi)=\{\phi(\chi_1),\dots,\phi(\chi_T)\}$'},'Interpreter','LaTex','FontSize',10)
-else
-    legend({'Mean Demo trajectory $\Xi=\{\xi_1,\dots,\xi_T\}$', ... , 
-    'Virtual Linear Trajectory $\chi=\{\chi_1,\dots,\chi_T\}$', ...    
-    'Transformed Demonstrated Trajectory $\Phi^{-1}(\Xi)=\{\phi^{-1}(\xi_1),\dots,\phi^{-1}(\xi_T)\}$',...
-    'Transformed Virtual Trajectory $\Phi(\chi)=\{\phi(\chi_1),\dots,\phi(\chi_T)\}$'},'Interpreter','LaTex','FontSize',10)
-end
-grid on;
-title('Results of Diffeomorphic Matching Algorithm','Interpreter','LaTex', 'FontSize',15)
-xlim(XLimPlot(1,:));
-ylim(XLimPlot(2,:));
+h_fig = plotDiffeomorphicTransformation(nDemos, source, target_trajectory, alltarget_trajectory, allSource, diff_fun, inverse_diff_fun);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%       Step 3: Generated Deformed Dynamics function       %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generate DS function
-EIG0 = -diag([1,2.*ones(1,dim-1)]);
+lambda_1 = 1;
+EIG0 = -diag([lambda_1,2*lambda_1.*ones(1,dim-1)]);
 ds_diff = @(x) diffeomorphic_ds(x-repmat(att,[1 size(x,2)]), EIG0, source, jac_inverse_diff_fun);
 
 %%%%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
-simulate_reproductions = 1;
-[hd, hs, hr, x_sim] = visualizeEstimatedDS(alltarget_trajectory(1:2,:), ds_diff, simulate_reproductions, Xinit);
+% Fill in plotting options
+ds_plot_options = [];
+ds_plot_options.sim_traj  = 1;            % To simulate trajectories from x0_all
+ds_plot_options.x0_all    = x0_all;       % Intial Points
+ds_plot_options.init_type = 'cube';       % For 3D DS, to initialize streamlines
+                                          % 'ellipsoid' or 'cube'  
+ds_plot_options.nb_points = 30;           % No of streamlines to plot (3D)
+ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
+[hd, hs, hr, x_sim] = visualizeEstimatedDS(Data(1:dim,:), ds_diff, ds_plot_options);
 limits = axis;
 title('Diffeomorphic Matching - Dynamics', 'Interpreter','LaTex','FontSize',17)
+
+%% %%%%%%%%%%%%   Export diff-DS parameters to Mat file  %%%%%%%%%%%%%%%%%%%
+DS_name = '3D-CShape-top_diff';
+save_diffDS_to_Mat(DS_name, pkg_dir, EIG0, source, jac_inverse_diff_fun,  att, x0_all, dt)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
@@ -166,22 +155,22 @@ title('Diffeomorphic Matching - Dynamics', 'Interpreter','LaTex','FontSize',17)
 %% NOTE: THIS WILL NOT WORK IF YOU NORMALIZE
 %% Compute Errors
 % Compute RMSE on training data
-rmse = mean(rmse_error(ds_diff, Data(1:2,:), Data(3:4,:)));
+rmse = mean(rmse_error(ds_diff, Data(1:dim,:), Data(dim+1:end,:)));
 fprintf('diff-DS got prediction RMSE on training set: %d \n', rmse);
 
 % Compute e_dot on training data
-edot = mean(edot_error(ds_diff, Data(1:2,:), Data(3:4,:)));
+edot = mean(edot_error(ds_diff, Data(1:dim,:), Data(dim+1:end,:)));
 fprintf('diff-DS got prediction e_dot on training set: %d \n', edot);
 
 % Compute DTWD between train trajectories and reproductions
-if simulate_reproductions
+if ds_plot_options.sim_traj
     nb_traj       = size(x_sim,3);
     ref_traj_leng = size(Data,2)/nb_traj;
     dtwd = zeros(1,nb_traj);
     for n=1:nb_traj
         start_id = round(1+(n-1)*ref_traj_leng);
         end_id   = round(n*ref_traj_leng);
-        dtwd(1,n) = dtw(x_sim(:,:,n)',Data(1:2,start_id:end_id)',20);
+        dtwd(1,n) = dtw(x_sim(:,:,n)',Data(1:dim,start_id:end_id)',20);
     end
     fprintf('diff-DS got DTWD of reproduced trajectories: %2.4f +/- %2.4f \n', mean(dtwd),std(dtwd));
 end

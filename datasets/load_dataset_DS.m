@@ -46,7 +46,7 @@ elseif dataset <= 5
         % Gather Data
         data{l} = data{l}(:,1:sub_sample:end);
     end
-    [Data, Data_sh, att, x0_all, dt] = processDataStructure(data);
+    [Data, Data_sh, att, x0_all, dt, data] = processDataStructure(data);
     
 % Processing for the 3D Datasets
 else
@@ -54,11 +54,11 @@ else
     data_ = data_.data;
     N = length(data_);    
     data = []; dt = 0.01;
-    traj = randsample(N, nb_trajectories)'
+    traj = randsample(N, nb_trajectories)';
     for l=1:nb_trajectories
         % Gather Data
         data{l} = data_{traj(l)}(:,1:sub_sample:end);
     end
-    [Data, Data_sh, att, x0_all, ~] = processDataStructure(data);
+    [Data, Data_sh, att, x0_all, ~, data] = processDataStructure(data);
 end
 end

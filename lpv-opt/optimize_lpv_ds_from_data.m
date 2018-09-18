@@ -133,7 +133,7 @@ switch ctr_type
         P = eye(M);
     case 1
         P   = value(P_var);
-        b_g = zeros(M,K);
+        b_c = zeros(M,K);
 end
 
 sol.info

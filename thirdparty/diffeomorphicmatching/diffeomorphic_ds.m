@@ -13,6 +13,7 @@ A = R0*EIG0*R0.';
 
 phiZero = PhiX(:,end);
 fDyn = @(X) getDX(A, ftauJ, X, phiZero, 1, epsilonTarg_2, M, N, 0);
+% fDyn = @(X) getDX(A, ftauJ, X, phiZero, 1, epsilonTarg_2, M, N, 1);
 xdot = fDyn(x);
 
 if N == 1

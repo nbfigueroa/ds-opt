@@ -16,16 +16,16 @@ close all; clear all; clc
 % 5:  Dual-behavior Dataset (2D)
 % 6:  Via-point Dataset     (3D) -- 15 trajectories recorded at 100Hz
 % 7:  Sink Dataset          (3D) -- 21 trajectories recorded at 100Hz
-% 8:  CShape top            (3D) -- 10 trajectories recorded at 100Hz
-% 9:  CShape bottom         (3D) -- 10 trajectories recorded at 100Hz
+% 8:  CShape bottom         (3D) -- 16 trajectories recorded at 100Hz
+% 9:  CShape top            (3D) -- 16 trajectories recorded at 100Hz
 % 10: CShape all            (3D) -- 20 trajectories recorded at 100Hz
 % 11: Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 1; 
-sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 0; % Only for real 3D data
-[Data, Data_sh, att, x0_all, data, ~] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
+chosen_dataset  = 7; 
+sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
+nb_trajectories = 10; % Only for real 3D data
+[Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
 vel_samples = 10; vel_size = 0.5; 
@@ -37,6 +37,12 @@ M          = size(Data,1)/2;
 Xi_ref     = Data_sh(1:M,:);
 Xi_dot_ref = Data_sh(M+1:end,:);     
 
+%% %%%%%%%%%%%% [Optional] Load pre-learned SEDS model from Mat file  %%%%%%%%%%%%%%%%%%%
+DS_name = '3D-Sink_seds';
+matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
+load(matfile)
+ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:M,M+1:2*M);
+
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 1 - OPTION 2 (DATA LOADING): Load Motions from LASA Handwriting Dataset %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -44,7 +50,7 @@ Xi_dot_ref = Data_sh(M+1:end,:);
 clear all; close all; clc
 
 % Select one of the motions from the LASA Handwriting Dataset
-sub_sample      = 3; % Each trajectory has 1000 samples when set to '1'
+sub_sample      = 2; % Each trajectory has 1000 samples when set to '1'
 nb_trajectories = 7; % Maximum 7, will select randomly if <7
 [Data, Data_sh, att, x0_all, ~, dt] = load_LASA_dataset_DS(sub_sample, nb_trajectories);
 
@@ -54,8 +60,8 @@ vel_samples = 15; vel_size = 0.5;
 
 % Extract Position and Velocities
 M          = size(Data,1)/2;    
-Xi_ref     = Data(1:M,:);
-Xi_dot_ref = Data(M+1:end,:);  
+Xi_ref     = Data_sh(1:M,:);
+Xi_dot_ref = Data_sh(M+1:end,:);  
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 2 (GMM FITTING): Fit GMM to Trajectory Data %%
@@ -80,19 +86,17 @@ else
     nb_gaussians = 5;
 end
 
-%finding an initial guess for GMM's parameter
+% Finding an initial guess for GMM's parameter
 [Priors0, Mu0, Sigma0] = initialize_SEDS([Xi_ref; Xi_dot_ref],nb_gaussians);
-title_string = '$\theta_{\gamma}=\{\pi_k,\mu^k,\Sigma^k\}$ Initial Estimate';
 
+
+%%  Visualize Gaussian Components and labels on clustered trajectories
 % Plot Initial Estimate 
 [~, est_labels] =  my_gmm_cluster([Xi_ref; Xi_dot_ref], Priors0, Mu0, Sigma0, 'hard', []);
-% Position/Velocity Trajectories
-vel_samples = 20; vel_size = 0.5; 
-[h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data_sh, [0 0]', vel_samples, vel_size);
-limits = axis;
-plotGMMParameters( Xi_ref, est_labels, Mu0(1:2,:), Sigma0(1:2,1:2,:),1);
-title(title_string, 'Interpreter', 'LaTex', 'FontSize',20)
-ml_plot_gmm_pdf(Xi_ref, Priors0, Mu0(1:2,:), Sigma0(1:2,1:2,:), limits)
+
+% Visualize Estimated Parameters
+[h_gmm]  = visualizeEstimatedGMM(Xi_ref,  Priors0, Mu0(1:M,:), Sigma0(1:M,1:M,:), est_labels, est_options);
+title('GMM $\theta_{\gamma}=\{\pi_k,\mu^k,\Sigma^k\}$ Initial Estimate','Interpreter','LaTex');
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%  Step 3 (DS ESTIMATION): RUN SEDS SOLVER  %%%%%%%%
@@ -105,16 +109,24 @@ options.display       = 1;        % An option to control whether the algorithm
 options.tol_stopping  = 10^-9;    % A small positive scalar defining the stoppping
                                   % tolerance for the optimization solver [default: 10^-10]
 options.max_iter      = 1000;     % Maximum number of iteration forthe solver [default: i_max=1000]
-options.objective     = 'mse';    % 'mse'/'likelihood'
-sub_sample            = 1;
+options.objective     = 'likelihood'; % 'mse'/'likelihood'
+sub_sample            = 2;
 
 %running SEDS optimization solver
-[Priors Mu Sigma]= SEDS_Solver(Priors0,Mu0,Sigma0,[Xi_ref(:,1:sub_sample:end); Xi_dot_ref(:,1:sub_sample:end)],options); 
-ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:2,3:4);
+[Priors, Mu, Sigma]= SEDS_Solver(Priors0,Mu0,Sigma0,[Xi_ref(:,1:sub_sample:end); Xi_dot_ref(:,1:sub_sample:end)],options); 
+ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:M,M+1:2*M);
 
-%%%%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
-simulate_reproductions = 1;
-[hd, hs, hr, x_sim] = visualizeEstimatedDS(Data(1:2,:), ds_seds, simulate_reproductions, x0_all);
+%% %%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
+% Fill in plotting options
+ds_plot_options = [];
+ds_plot_options.sim_traj  = 1;            % To simulate trajectories from x0_all
+ds_plot_options.x0_all    = x0_all;       % Intial Points
+ds_plot_options.init_type = 'cube';       % For 3D DS, to initialize streamlines
+                                          % 'ellipsoid' or 'cube'  
+ds_plot_options.nb_points = 30;           % No of streamlines to plot (3D)
+ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
+
+[hd, hs, hr, x_sim] = visualizeEstimatedDS(Data(1:M,:), ds_seds, ds_plot_options);
 limits = axis;
 switch options.objective
     case 'mse'        
@@ -122,6 +134,10 @@ switch options.objective
     case 'likelihood'
         title('SEDS Dynamics with $J(\theta_{\gamma})$= log-Likelihood', 'Interpreter','LaTex','FontSize',20)
 end
+
+%% %%%%%%%%%%%%   Export SEDS parameters to Mat file  %%%%%%%%%%%%%%%%%%%
+DS_name = '3D-Sink_seds';
+save_seDS_to_Mat(DS_name, pkg_dir, Priors0, Mu0, Sigma0, Priors, Mu, Sigma, att, x0_all, dt, options,est_options)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
@@ -137,14 +153,14 @@ edot = mean(edot_error(ds_seds, Xi_ref, Xi_dot_ref));
 fprintf('SEDS got prediction e_dot on training set: %d \n', edot);
 
 % Compute DTWD between train trajectories and reproductions
-if simulate_reproductions
+if ds_plot_options.sim_traj
     nb_traj       = size(x_sim,3);
     ref_traj_leng = size(Xi_ref,2)/nb_traj;
     dtwd = zeros(1,nb_traj);
     for n=1:nb_traj
         start_id = round(1+(n-1)*ref_traj_leng);
         end_id   = round(n*ref_traj_leng);
-        dtwd(1,n) = dtw(x_sim(:,:,n)',Data(1:2,start_id:end_id)',20);
+        dtwd(1,n) = dtw(x_sim(:,:,n)',Data(1:M,start_id:end_id)',20);
     end
 end
 fprintf('SEDS got reproduction DTWD on training set: %2.4f +/- %2.4f \n', mean(dtwd),std(dtwd));

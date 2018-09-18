@@ -16,19 +16,19 @@ close all; clear all; clc
 % 3:  A-shape Dataset       (2D) * 
 % 4:  S-shape Dataset       (2D) * 
 % 5:  Dual-behavior Dataset (2D) *
-% 6:  Via-point Dataset     (3D) -- 15 trajectories recorded at 100Hz
-% 7:  Sink Dataset          (3D) -- 11 trajectories recorded at 100Hz
-% 8:  CShape bottom         (3D) -- 16 trajectories recorded at 100Hz
-% 9:  CShape top            (3D) -- 16 trajectories recorded at 100Hz
+% 6:  Via-point Dataset     (3D) * 15 trajectories recorded at 100Hz
+% 7:  Sink Dataset          (3D) * 11 trajectories recorded at 100Hz
+% 8:  CShape bottom         (3D) * 16 trajectories recorded at 100Hz
+% 9:  CShape top            (3D) * 16 trajectories recorded at 100Hz
 % 10: CShape all            (3D) -- x trajectories recorded at 100Hz
 % 11: Cube arranging        (3D) -- x trajectories recorded at 100Hz
 % 12: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 9; 
+chosen_dataset  = 7; 
 sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 10; % For real 3D data only
-[Data, Data_sh, att, x0_all, ~, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
+[Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
 vel_samples = 10; vel_size = 0.5; 
@@ -38,6 +38,16 @@ vel_samples = 10; vel_size = 0.5;
 M          = size(Data,1)/2;    
 Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);       
+
+%% %%%%%%%%%%%% [Optional] Load pre-learned lpv-DS model from Mat file  %%%%%%%%%%%%%%%%%%%
+DS_name = '3D-Sink_qlf_2';
+matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
+load(matfile)
+if constr_type == 1
+    ds_lpv = @(x) lpv_ds(x-repmat(att,[1 size(x,2)]), ds_gmm, A_g, b_g);
+else
+    ds_lpv = @(x) lpv_ds(x, ds_gmm, A_k, b_k);
+end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 1 - OPTION 2 (DATA LOADING): Load Motions from LASA Handwriting Dataset %%
@@ -71,10 +81,10 @@ est_options.type             = 0;   % GMM Estimation Alorithm Type
 
 % If algo 1 selected:
 est_options.maxK             = 15;  % Maximum Gaussians for Type 1
-est_options.fixed_K          = 8;  % Fix K and estimate with EM for Type 1
+est_options.fixed_K          = [];  % Fix K and estimate with EM for Type 1
 
 % If algo 0 or 2 selected:
-est_options.samplerIter      = 20;  % Maximum Sampler Iterations
+est_options.samplerIter      = 40;  % Maximum Sampler Iterations
                                     % For type 0: 20-50 iter is sufficient
                                     % For type 2: >100 iter are needed
                                     
@@ -86,7 +96,7 @@ est_options.estimate_l       = 1;   % '0/1' Estimate the lengthscale, if set to 
 est_options.l_sensitivity    = 2;   % lengthscale sensitivity [1-10->>100]
                                     % Default value is set to '2' as in the
                                     % paper, for very messy, close to
-                                    % self-interescting trajectories, we
+                                    % self-intersecting trajectories, we
                                     % recommend a higher value
 est_options.length_scale     = [];  % if estimate_l=0 you can define your own
                                     % l, when setting l=0 only
@@ -96,39 +106,40 @@ est_options.length_scale     = [];  % if estimate_l=0 you can define your own
 [Priors, Mu, Sigma] = fit_gmm(Xi_ref, Xi_dot_ref, est_options);
 
 %% Generate GMM data structure for DS learning
-clear ds_gmm; ds_gmm.Mu = Mu; ds_gmm.Sigma = Sigma; 
-ds_gmm.Priors = Priors; 
+clear ds_gmm; ds_gmm.Mu = Mu; ds_gmm.Sigma = Sigma; ds_gmm.Priors = Priors; 
 
 %% (Recommended!) Step 2.1: Dilate the Covariance matrices that are too thin
 % This is recommended to get smoother streamlines/global dynamics
 adjusts_C  = 1;
-if adjusts_C  == 1
-    tot_scale_fact = 1; rel_scale_fact = 0.25;
-    Sigma_ = adjust_Covariances(Sigma, tot_scale_fact, rel_scale_fact);
+if adjusts_C  == 1 
+    if M == 2
+        tot_dilation_factor = 1; rel_dilation_fact = 0.25;
+    elseif M == 3
+        tot_dilation_factor = 1.25; rel_dilation_fact = 0.5;        
+    end
+    Sigma_ = adjust_Covariances(ds_gmm.Priors, ds_gmm.Sigma, tot_dilation_factor, rel_dilation_fact);
     ds_gmm.Sigma = Sigma_;
 end   
 
-%%  (Optional) Step 2.2: Visualize Gaussian Components and labels on clustered trajectories 
+%%  Visualize Gaussian Components and labels on clustered trajectories 
 % Extract Cluster Labels
-est_K      = length(Priors);
 [~, est_labels] =  my_gmm_cluster(Xi_ref, ds_gmm.Priors, ds_gmm.Mu, ds_gmm.Sigma, 'hard', []);
 
 % Visualize Estimated Parameters
 [h_gmm]  = visualizeEstimatedGMM(Xi_ref,  ds_gmm.Priors, ds_gmm.Mu, ds_gmm.Sigma, est_labels, est_options);
-limits = axis;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%  Step 3 (DS ESTIMATION): ESTIMATE SYSTEM DYNAMICS MATRICES  %%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%%% 
 % Type of constraints/optimization 
-constr_type = 1;      % 0:'convex':     A' + A < 0 (Proposed in paper)
-                      % 1:'non-convex': A'P + PA < 0
+constr_type = 2;      % 0:'convex':     A' + A < 0 (Proposed in paper)
+                      % 1:'non-convex': A'P + PA < 0 (Sina's Thesis approach - not suitable for 3D)
                       % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
 init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx                
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if constr_type == 0 || constr_type == 1
-    P_opt = [];
+    P_opt = eye(M);
 else
     % P-learning works best at the origin
     [Vxf] = learn_wsaqf(Data, 0, att);
@@ -137,11 +148,11 @@ end
 
 %%%%%%%%  LPV system sum_{k=1}^{K}\gamma_k(xi)(A_kxi + b_k) %%%%%%%%  
 if constr_type == 1
-    [A_g, b_g, P_est] = optimize_lpv_ds_from_data(Data_sh, zeros(M,1), constr_type, ds_gmm, P_opt, init_cvx);
-    ds_lpv = @(x) lpv_ds(x-repmat(att,[1 size(x,2)]), ds_gmm, A_g, b_g);
+    [A_k, b_k, P_est] = optimize_lpv_ds_from_data(Data_sh, zeros(M,1), constr_type, ds_gmm, P_opt, init_cvx);
+    ds_lpv = @(x) lpv_ds(x-repmat(att,[1 size(x,2)]), ds_gmm, A_k, b_k);
 else
-    [A_g, b_g, P_est] = optimize_lpv_ds_from_data(Data, att, constr_type, ds_gmm, P_opt, init_cvx);
-    ds_lpv = @(x) lpv_ds(x, ds_gmm, A_g, b_g);
+    [A_k, b_k, P_est] = optimize_lpv_ds_from_data(Data, att, constr_type, ds_gmm, P_opt, init_cvx);
+    ds_lpv = @(x) lpv_ds(x, ds_gmm, A_k, b_k);
 end
 
 %% %%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
@@ -149,14 +160,13 @@ end
 ds_plot_options = [];
 ds_plot_options.sim_traj  = 1;            % To simulate trajectories from x0_all
 ds_plot_options.x0_all    = x0_all;       % Intial Points
-ds_plot_options.init_type = 'ellipsoid';  % For 3D DS, to initialize streamlines
+ds_plot_options.init_type = 'cube';       % For 3D DS, to initialize streamlines
                                           % 'ellipsoid' or 'cube'  
 ds_plot_options.nb_points = 30;           % No of streamlines to plot (3D)
 ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
 
 [hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_lpv, ds_plot_options);
 limits = axis;
-
 switch constr_type
     case 0
         title('GMM-based LPV-DS with QLF', 'Interpreter','LaTex','FontSize',20)
@@ -166,7 +176,9 @@ switch constr_type
         title('GMM-based LPV-DS with P-QLF', 'Interpreter','LaTex','FontSize',20)
 end
 
-%% %%%%%%%%%%%%   Export DS parameters to YAML file  %%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%   Export DS parameters to Mat file  %%%%%%%%%%%%%%%%%%%
+DS_name = '3D-CShape-top_qlf_2';
+save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
@@ -181,7 +193,7 @@ edot = mean(edot_error(ds_lpv, Xi_ref, Xi_dot_ref));
 fprintf('LPV-DS with (O%d), got e_dot on training set: %d \n', constr_type+1, edot);
 
 % Compute DTWD between train trajectories and reproductions
-if simulate_reproductions
+if ds_plot_options.sim_traj
     nb_traj       = size(x_sim,3);
     ref_traj_leng = size(Xi_ref,2)/nb_traj;
     dtwd = zeros(1,nb_traj);
