@@ -176,9 +176,14 @@ switch constr_type
         title('GMM-based LPV-DS with P-QLF', 'Interpreter','LaTex','FontSize',20)
 end
 
-%% %%%%%%%%%%%%   Export DS parameters to Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-CShape-top_qlf_2';
+%% %%%%%%%%%%%%   Export DS parameters to Mat/Yaml files  %%%%%%%%%%%%%%%%%%%
+DS_name = '3D-CShape-bottom_pqlf_2';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
+
+% TODO:...
+% to use the rest of the code you need a matlab yamle convertor
+% you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
+save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, b_k, att, x0_all, dt)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%

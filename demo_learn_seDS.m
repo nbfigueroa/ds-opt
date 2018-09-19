@@ -135,9 +135,14 @@ switch options.objective
         title('SEDS Dynamics with $J(\theta_{\gamma})$= log-Likelihood', 'Interpreter','LaTex','FontSize',20)
 end
 
-%% %%%%%%%%%%%%   Export SEDS parameters to Mat file  %%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%   Export SEDS model parameters to Mat/Yaml files  %%%%%%%%%%%%%%%%%%%
 DS_name = '3D-Sink_seds';
 save_seDS_to_Mat(DS_name, pkg_dir, Priors0, Mu0, Sigma0, Priors, Mu, Sigma, att, x0_all, dt, options,est_options)
+
+% TODO:...
+% to use the rest of the code you need a matlab yamle convertor
+% you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
+save_seDS_to_Yaml(DS_name, pkg_dir, Priors, Mu, Sigma, att, x0_all, dt)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
