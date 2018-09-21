@@ -1,0 +1,19 @@
+function save_lpvDS_to_txt(DS_name, pkg_dir,  ds_gmm, A_k, b_k, att,Priors,Mu,Sigma,A_k, b_k)
+
+model_dir = strcat(pkg_dir,'/',DS_name, '/')
+mkdir(model_dir)
+
+% Writing Priors
+
+dlmwrite(name, Priors,'newline','pc','-append','Delimiter',' ','precision','%.6f');
+
+
+dlmwrite(name, size(Mu),'Delimiter',' ','precision','%i');
+
+%dlmwrite(name, reshape(Mu/1000,1,[]),'newline','pc','-append','Delimiter',' ','precision','%.6f');
+dlmwrite(name, reshape(Mu,1,[]),'newline','pc','-append','Delimiter',' ','precision','%.6f');
+for i=1:size(Mu,2)
+    %dlmwrite(name, reshape(Sigma(:,:,i)/1000^2,1,[]),'newline','pc','-append','Delimiter',' ','precision','%.6f');
+    dlmwrite(name, reshape(Sigma(:,:,i)',1,[]),'newline','pc','-append','Delimiter',' ','precision','%.6f');
+end
+out = true;

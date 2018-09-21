@@ -2,7 +2,7 @@ close all
 clear all
 clc
 
-filename = 's3_roll_GMM.txt';
+filename = 'mySEDSModel.txt';
 
 data = dlmread(filename);
 
@@ -70,7 +70,7 @@ SED_struc = struct('K',         k_rec,...
 SED_dump = YAML.dump(SED_struc);
 disp(SED_dump);
 
-YAML.write('s3_roll_GMM.yml',SED_struc)
+YAML.write('mySED_test.yml',SED_struc)
 
 % you can go head and clean up a bit your yaml file, 
 % but be carefull that tab (\t) is not ok 

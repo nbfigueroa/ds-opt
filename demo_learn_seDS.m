@@ -22,8 +22,8 @@ close all; clear all; clc
 % 11: Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 9; 
-sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
+chosen_dataset  = 7; 
+sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 10; % Only for real 3D data
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
@@ -38,7 +38,7 @@ Xi_ref     = Data_sh(1:M,:);
 Xi_dot_ref = Data_sh(M+1:end,:);     
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned SEDS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-CShape-bottom_seds';
+DS_name = '3D-Sink/3D-Sink_seds';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:M,M+1:2*M);
@@ -106,11 +106,11 @@ options.tol_mat_bias  = 10^-6;    % A very small positive scalar to avoid
                                   % instabilities in Gaussian kernel [default: 10^-1]                             
 options.display       = 1;        % An option to control whether the algorithm
                                   % displays the output of each iterations [default: true]                            
-options.tol_stopping  = 10^-9;    % A small positive scalar defining the stoppping
+options.tol_stopping  = 10^-6;    % A small positive scalar defining the stoppping
                                   % tolerance for the optimization solver [default: 10^-10]
 options.max_iter      = 1000;     % Maximum number of iteration forthe solver [default: i_max=1000]
 options.objective     = 'likelihood'; % 'mse'/'likelihood'
-sub_sample            = 2;
+sub_sample            = 1;
 
 %running SEDS optimization solver
 [Priors, Mu, Sigma]= SEDS_Solver(Priors0,Mu0,Sigma0,[Xi_ref(:,1:sub_sample:end); Xi_dot_ref(:,1:sub_sample:end)],options); 
@@ -136,11 +136,10 @@ switch options.objective
 end
 
 %% %%%%%%%%%%%%   Export SEDS model parameters to Mat/Yaml files  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-Sink_seds';
+DS_name = 'sink_seds';
 save_seDS_to_Mat(DS_name, pkg_dir, Priors0, Mu0, Sigma0, Priors, Mu, Sigma, att, x0_all, dt, options,est_options)
 
-% TODO:...
-% to use the rest of the code you need a matlab yamle convertor
+% To use the rest of the code you need a matlab yaml convertor
 % you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
 save_seDS_to_Yaml(DS_name, pkg_dir, Priors, Mu, Sigma, att, x0_all, dt)
 

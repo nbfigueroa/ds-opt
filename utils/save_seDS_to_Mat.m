@@ -2,6 +2,7 @@ function save_seDS_to_Mat(name, pkg_dir, Priors0, Mu0, Sigma0, Priors, Mu, Sigma
 seDS_model =[];
 seDS_model.name         = name;
 
+
 % Initial GMM parameters
 seDS_model.Priors0      = Priors0;
 seDS_model.Mu0          = Mu0;
