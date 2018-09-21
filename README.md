@@ -1,10 +1,21 @@
 # ds-opt
-Toolbox including optimization techniques for estimation of Globally Asymptotically Stable Dynamical Systems focused on (1) Linear Parameter Varying formulation with GMM-based mixing function and different Lyapunov candidate functions as proposed in [1]. For comparison purposes, this toolbox also includes implementations and demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].
+Toolbox including optimization techniques for estimation of Globally Asymptotically Stable Dynamical Systems focused on (1) Linear Parameter Varying formulation with GMM-based mixing function and different Lyapunov candidate functions as proposed in [1], where a non-linear DS formulated as:
+<p align="center">
+<img src="https://github.com/nbfigueroa/LPV/blob/nadia/img/f_x.gif"></>
+
+is learned from demonstrations while ensuring global asymptotic stability via constraints derived from either a:
+- QLF (Quadratic Lyapunov Function): <img src="https://github.com/nbfigueroa/LPV/blob/nadia/img/stab_qlf.gif">
+- P-QLF(Parametrized QLF):  <img src="https://github.com/nbfigueroa/LPV/blob/nadia/img/stab_pqlf.gif">  
+
+This allows us to accurately encode highly non-linear, non-monotic trajectories as the ones below:
 
 <p align="center">
   <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Lshape_lpvO3.png" width="220">
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220">
 </>
+  
+while ensuring global asymptotic stability. For comparison purposes, this toolbox also includes implementations and demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
+ 
   
 ### Installation Instructions
 This package needs the **physically-consisent** GMM (PC-GMM) fitting proposed in [1] and implemented in [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git). If you do not already have this package, you can download it as a submodule. After cloning this repo, one must initialize/download the submodule with the following commands:
