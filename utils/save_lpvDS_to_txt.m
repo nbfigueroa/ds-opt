@@ -27,6 +27,9 @@ end
 % Writing b_k's
 dlmwrite(strcat(model_dir,'b_k'), b_k,'newline','pc','Delimiter',' ','precision','%.6f');
 
-
 % Writing attractor
-dlmwrite(strcat(model_dir,'att'), att,'newline','pc','Delimiter',' ','precision','%.6f');
+dlmwrite(strcat(model_dir,'Attractor'), att,'newline','pc','Delimiter',' ','precision','%.6f');
+
+% Writing Dimensions
+Dimensions = [length(Priors); size(Mu,1)];
+dlmwrite(strcat(model_dir,'Dimenions'), Dimensions,'newline','pc','Delimiter',' ','precision','%.6f');
