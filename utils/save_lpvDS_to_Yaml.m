@@ -1,4 +1,4 @@
-function save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, b_k, att, x0_all, dt)
+function save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, dt)
 
 % GMM parameters
 K          = length(ds_gmm.Priors);
@@ -9,7 +9,6 @@ Sigma_vec  = ds_gmm.Sigma(1:end);
 
 % DS parameters
 A_vec      = A_k(1:end);
-b_vec      = b_k(1:end);
 
 % Initial points (to simulate)
 x0_all_vec = x0_all(1:end);
@@ -18,12 +17,11 @@ x0_all_vec = x0_all(1:end);
 lpvDS_model =[];
 lpvDS_model.name         = DS_name;
 lpvDS_model.K            = K;
-lpvDS_model.dim          = dim;
+lpvDS_model.M            = dim;
 lpvDS_model.Priors       = Priors_vec;
 lpvDS_model.Mu           = Mu_vec;
 lpvDS_model.Sigma        = Sigma_vec;
-lpvDS_model.A_k          = A_vec;
-lpvDS_model.b_k          = b_vec;
+lpvDS_model.A            = A_vec;
 lpvDS_model.attractor    = att(1:end);
 lpvDS_model.x0_all       = x0_all_vec;
 lpvDS_model.dt           = dt;

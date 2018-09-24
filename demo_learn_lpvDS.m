@@ -25,7 +25,7 @@ close all; clear all; clc
 % 12: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 8; 
+chosen_dataset  = 6; 
 sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 10; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
@@ -40,7 +40,7 @@ Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);   
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned lpv-DS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-Cshape-bottom/3D-CShape-bottom_pqlf_2';
+DS_name = '3D-Via-point/3D-Via-point_qlf_1';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 if constr_type == 1
@@ -177,15 +177,17 @@ switch constr_type
 end
 
 %% %%%%%%%%%%%%   Export DS parameters to Mat/Txt/Yaml files  %%%%%%%%%%%%%%%%%%%
-DS_name = 'CShape-bottom-pqlf';
+DS_name = '3D-Via-point_pqlf_1';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
 
-% Save LPV-DS parameters to text files
-save_lpvDS_to_txt(DS_name, pkg_dir,  ds_gmm, A_k, b_k, att)
+%% Save LPV-DS parameters to text files
+DS_name = 'via-point-pqlf';
+save_lpvDS_to_txt(DS_name, pkg_dir,  ds_gmm, A_k, att)
 
+%% Save LPV-DS parameters to yaml file
 % To use the rest of the code you need a matlab yaml convertor
 % you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
-save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, b_k, att, x0_all, dt)
+save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, dt)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
@@ -214,6 +216,23 @@ end
 
 % Compare Velocities from Demonstration vs DS
 h_vel = visualizeEstimatedVelocities(Data, ds_lpv);
+
+%% Optional save reference trajectories with computed velocities for C++ class testing
+
+xd_dot = [];
+% Simulate velocities from same reference trajectory
+for i=1:N
+    xd_dot_ = ds_lpv(Data(1:M,i));    
+    % Record Trajectories
+    xd_dot = [xd_dot xd_dot_];        
+end
+
+model_dir = strcat(pkg_dir,'/models/',DS_name, '/');
+% Writing Data
+dlmwrite(strcat(model_dir,'Data'), Data, 'newline','unix','Delimiter',' ','precision','%.6f');
+
+% Writing xi_dot
+dlmwrite(strcat(model_dir,'xi_dot'), xd_dot, 'newline','unix','Delimiter',' ','precision','%.6f');
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%     Step 5 (Optional - Stability Check 2D-only): Plot Lyapunov Function and derivative  %%
