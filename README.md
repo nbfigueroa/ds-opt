@@ -23,8 +23,8 @@ For comparison purposes, this toolbox also includes demo scripts for DS learning
 ```
 git clone https://bitbucket.org/khansari/seds SEDS 
 ```
-and place it in the ```thirdparty/``` folder. 
-- To run the diffeomorphic matching [3] learning script, please contact the authors to get the code and place it in the ```thirdparty/``` folder. 
+and place it in the ```thirdparty/seds``` folder. 
+- To run the diffeomorphic matching [3] learning script, please contact the authors to get the code and place it in the ```thirdparty/diffeomorphicmatching``` folder. 
   
 ### Installation Instructions
 This package needs the **physically-consisent** GMM (PC-GMM) fitting proposed in [1] and implemented in [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git). If you do not already have this package, you can download it as a submodule. After cloning this repo, one must initialize/download the submodule with the following commands:
