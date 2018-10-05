@@ -17,7 +17,11 @@ This allows us to accurately encode highly non-linear, non-monotic trajectories 
 while ensuring global asymptotic stability. For comparison purposes, this toolbox also includes implementation of LPV-DS and demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
  
 **Disclaimer:** 
-- To run the SEDS learning script, download it from [https://bitbucket.org/khansari/seds] and place it in the ```thirdparty/``` folder. 
+- To run the SEDS learning script, download it from 
+```
+git clone https://bitbucket.org/khansari/seds SEDS 
+```
+and place it in the ```thirdparty/``` folder. 
 - To run the diffeomorphic matching [3] learning script, please contact the authors to get the code. 
   
 ### Installation Instructions
