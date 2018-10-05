@@ -14,17 +14,17 @@ close all; clear all; clc
 % 3:  A-shape Dataset       (2D)
 % 4:  S-shape Dataset       (2D)
 % 5:  Dual-behavior Dataset (2D)
-% 6:  Via-point Dataset     (3D) -- 15 trajectories recorded at 100Hz
+% 6:  Via-point Dataset     (3D) -- 9 trajectories recorded at 100Hz
 % 7:  Sink Dataset          (3D) -- 21 trajectories recorded at 100Hz
 % 8:  CShape bottom         (3D) -- 16 trajectories recorded at 100Hz
 % 9:  CShape top            (3D) -- 16 trajectories recorded at 100Hz
 % 10: CShape all            (3D) -- 20 trajectories recorded at 100Hz
-% 11: Cube arranging        (3D) -- 20 trajectories recorded at 100Hz
+% 11: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 7; 
+chosen_dataset  = 10; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 10; % Only for real 3D data
+nb_trajectories = 4; % Only for real 3D data
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
@@ -38,7 +38,7 @@ Xi_ref     = Data_sh(1:M,:);
 Xi_dot_ref = Data_sh(M+1:end,:);     
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned SEDS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-Sink/3D-Sink_seds';
+DS_name = '3D-CShape-bottom/3D-CShape-bottom_seds';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:M,M+1:2*M);
@@ -121,7 +121,7 @@ ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:M,M+1:2*M)
 ds_plot_options = [];
 ds_plot_options.sim_traj  = 1;            % To simulate trajectories from x0_all
 ds_plot_options.x0_all    = x0_all;       % Intial Points
-ds_plot_options.init_type = 'cube';       % For 3D DS, to initialize streamlines
+ds_plot_options.init_type = 'ellipsoid';       % For 3D DS, to initialize streamlines
                                           % 'ellipsoid' or 'cube'  
 ds_plot_options.nb_points = 30;           % No of streamlines to plot (3D)
 ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
@@ -136,7 +136,7 @@ switch options.objective
 end
 
 %% %%%%%%%%%%%%   Export SEDS model parameters to Mat/Yaml files  %%%%%%%%%%%%%%%%%%%
-DS_name = 'sink_seds';
+DS_name = '3D-pick-box_seds-24';
 save_seDS_to_Mat(DS_name, pkg_dir, Priors0, Mu0, Sigma0, Priors, Mu, Sigma, att, x0_all, dt, options,est_options)
 
 % To use the rest of the code you need a matlab yaml convertor

@@ -13,13 +13,15 @@ switch dataset
     case 5
         dataset_name = '2D_multi-behavior.mat';
     case 6
-        dataset_name = '3D_viapoint_1.mat';
+        dataset_name = '3D_viapoint_3.mat';
     case 7
         dataset_name = '3D_sink.mat';
     case 8 
         dataset_name = '3D_Cshape_bottom.mat';
     case 9
         dataset_name = '3D_Cshape_top.mat';                       
+    case 10
+        dataset_name = '3D-pick-box.mat';                       
 end
 
 if isempty(sub_sample)

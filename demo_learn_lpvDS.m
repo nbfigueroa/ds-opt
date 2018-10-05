@@ -16,18 +16,17 @@ close all; clear all; clc
 % 3:  A-shape Dataset       (2D) * 
 % 4:  S-shape Dataset       (2D) * 
 % 5:  Dual-behavior Dataset (2D) *
-% 6:  Via-point Dataset     (3D) * 15 trajectories recorded at 100Hz
+% 6:  Via-point Dataset     (3D) * 9  trajectories recorded at 100Hz
 % 7:  Sink Dataset          (3D) * 11 trajectories recorded at 100Hz
-% 8:  CShape bottom         (3D) * 16 trajectories recorded at 100Hz
-% 9:  CShape top            (3D) * 12 trajectories recorded at 100Hz
+% 8:  CShape bottom         (3D) -- 16 trajectories recorded at 100Hz
+% 9:  CShape top            (3D) -- 12 trajectories recorded at 100Hz
 % 10: CShape all            (3D) -- x trajectories recorded at 100Hz
-% 11: Cube arranging        (3D) -- x trajectories recorded at 100Hz
-% 12: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
+% 11: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 6; 
+chosen_dataset  =10; 
 sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 10; % For real 3D data only
+nb_trajectories = 4; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
@@ -40,7 +39,7 @@ Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);   
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned lpv-DS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-Via-point/3D-Via-point_qlf_1';
+DS_name = '/3D-CShape-top/3D-CShape-top_pqlf_2';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 if constr_type == 1
@@ -115,7 +114,7 @@ if adjusts_C  == 1
     if M == 2
         tot_dilation_factor = 1; rel_dilation_fact = 0.25;
     elseif M == 3
-        tot_dilation_factor = 1; rel_dilation_fact = 0.5;        
+        tot_dilation_factor = 1; rel_dilation_fact = 0.75;        
     end
     Sigma_ = adjust_Covariances(ds_gmm.Priors, ds_gmm.Sigma, tot_dilation_factor, rel_dilation_fact);
     ds_gmm.Sigma = Sigma_;
@@ -133,7 +132,7 @@ end
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%%% 
 % Type of constraints/optimization 
-constr_type = 2;      % 0:'convex':     A' + A < 0 (Proposed in paper)
+constr_type = 0;      % 0:'convex':     A' + A < 0 (Proposed in paper)
                       % 1:'non-convex': A'P + PA < 0 (Sina's Thesis approach - not suitable for 3D)
                       % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
 init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx                
@@ -141,8 +140,9 @@ init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx
 if constr_type == 0 || constr_type == 1
     P_opt = eye(M);
 else
-    % P-learning works best at the origin
-    [Vxf] = learn_wsaqf(Data, 0, att);
+    % P-matrix learning
+%     [Vxf] = learn_wsaqf(Data,0,att);
+    [Vxf] = learn_wsaqf(Data_sh);
     P_opt = Vxf.P;
 end
 
@@ -160,7 +160,7 @@ end
 ds_plot_options = [];
 ds_plot_options.sim_traj  = 1;            % To simulate trajectories from x0_all
 ds_plot_options.x0_all    = x0_all;       % Intial Points
-ds_plot_options.init_type = 'cube';       % For 3D DS, to initialize streamlines
+ds_plot_options.init_type = 'ellipsoid';  % For 3D DS, to initialize streamlines
                                           % 'ellipsoid' or 'cube'  
 ds_plot_options.nb_points = 30;           % No of streamlines to plot (3D)
 ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
@@ -177,14 +177,15 @@ switch constr_type
 end
 
 %% %%%%%%%%%%%%   Export DS parameters to Mat/Txt/Yaml files  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-Via-point_pqlf_1';
+DS_name = '3D-Via-point_qlf_2';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
 
 %% Save LPV-DS parameters to text files
-DS_name = 'via-point-pqlf';
+DS_name = '3D-CShape-top-pqlf-2';
 save_lpvDS_to_txt(DS_name, pkg_dir,  ds_gmm, A_k, att)
 
 %% Save LPV-DS parameters to yaml file
+DS_name = '3D-pick-box-qlf';
 % To use the rest of the code you need a matlab yaml convertor
 % you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
 save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, dt)
