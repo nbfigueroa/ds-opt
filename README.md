@@ -14,8 +14,11 @@ This allows us to accurately encode highly non-linear, non-monotic trajectories 
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220">
 </>
   
-while ensuring global asymptotic stability. For comparison purposes, this toolbox also includes implementations and demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
+while ensuring global asymptotic stability. For comparison purposes, this toolbox also includes implementation of LPV-DS and demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
  
+**Disclaimer:** 
+- To run the SEDS learning script, download SEDS [1] from [https://bitbucket.org/khansari/seds] and place it in the ```thirdparty/``` folder. 
+- To run the diffeomorphic matching [3] learning script, please contact the authors to get the code. 
   
 ### Installation Instructions
 This package needs the **physically-consisent** GMM (PC-GMM) fitting proposed in [1] and implemented in [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git). If you do not already have this package, you can download it as a submodule. After cloning this repo, one must initialize/download the submodule with the following commands:
@@ -33,6 +36,7 @@ git submodule update --remote
 
 ##### Running the demo scripts
 There are three important demo scripts:
+
 
 ### Example Datasets
 These examples + more datasets are provided in ```
