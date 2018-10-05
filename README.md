@@ -14,9 +14,11 @@ This allows us to accurately encode highly non-linear, non-monotic trajectories 
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220">
 </>
   
-while ensuring global asymptotic stability. For comparison purposes, this toolbox also includes implementation of LPV-DS and demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
- 
+while ensuring global asymptotic stability. 
+
 **Disclaimer:** 
+For comparison purposes, this toolbox also includes demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
+
 - To run the SEDS learning demo script, download SEDS implementation from 
 ```
 git clone https://bitbucket.org/khansari/seds SEDS 
