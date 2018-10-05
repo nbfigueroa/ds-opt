@@ -14,8 +14,17 @@ This allows us to accurately encode highly non-linear, non-monotic trajectories 
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Sshape_lpvO3.png" width="220"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/Ashape_lpvO3.png" width="220">
 </>
   
-while ensuring global asymptotic stability. For comparison purposes, this toolbox also includes implementations and demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
- 
+while ensuring global asymptotic stability. 
+
+**Disclaimer:** 
+For comparison purposes, this toolbox also includes demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
+
+- To run the SEDS learning demo script, download SEDS implementation from 
+```
+git clone https://bitbucket.org/khansari/seds SEDS 
+```
+and place it in the ```thirdparty/``` folder. 
+- To run the diffeomorphic matching [3] learning script, please contact the authors to get the code and place it in the ```thirdparty/``` folder. 
   
 ### Installation Instructions
 This package needs the **physically-consisent** GMM (PC-GMM) fitting proposed in [1] and implemented in [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git). If you do not already have this package, you can download it as a submodule. After cloning this repo, one must initialize/download the submodule with the following commands:
@@ -33,6 +42,7 @@ git submodule update --remote
 
 ##### Running the demo scripts
 There are three important demo scripts:
+
 
 ### Example Datasets
 These examples + more datasets are provided in ```
@@ -113,3 +123,6 @@ The following 3D datasets where collected via kinesthetic teaching of a KUKA LWR
 > [3] N. Perrin and P. Schlehuber-Caissier, “Fast diffeomorphic matching to learn globally asymptotically stable nonlinear dynamical systems,” Systems & Control Letters (2016).
 
 **Contact**: [Nadia Figueroa](http://lasa.epfl.ch/people/member.php?SCIPER=238387) (nadia.figueroafernandez AT epfl dot ch)
+
+**Acknowledgments**
+This work was supported by the EU project [Cogimon](https://cogimon.eu/cognitive-interaction-motion-cogimon) H2020-ICT-23-2014.
