@@ -1,5 +1,5 @@
 # ds-opt
-Toolbox including optimization techniques for estimation of Globally Asymptotically Stable Dynamical Systems focused on (1) Linear Parameter Varying formulation with GMM-based mixing function and different Lyapunov candidate functions as proposed in [1], where a non-linear DS formulated as:
+Toolbox including optimization techniques for estimation of Globally Asymptotically Stable Dynamical Systems focused on Linear Parameter Varying formulation with GMM-based mixing function and different Lyapunov candidate functions as proposed in [1], where a non-linear DS formulated as:
 <p align="center">
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/f_x.gif"></>
                                                                            
