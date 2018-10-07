@@ -15,16 +15,6 @@ This allows us to accurately encode highly non-linear, non-monotic trajectories 
 </>
   
 while ensuring global asymptotic stability. 
-
-**Disclaimer:** 
-For comparison purposes, this toolbox also includes demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
-
-- To run the SEDS learning demo script, download SEDS implementation from 
-```
-git clone https://bitbucket.org/khansari/seds SEDS 
-```
-and place it in the ```thirdparty/seds``` folder. 
-- To run the diffeomorphic matching [3] learning script, please contact the authors to get the MATLAB code and place it in the ```thirdparty/diffeomorphicmatching``` folder. 
   
 ### Installation Instructions
 This package needs the **physically-consisent** GMM (PC-GMM) fitting proposed in [1] and implemented in [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git). If you do not already have this package, you can download it as a submodule. After cloning this repo, one must initialize/download the submodule with the following commands:
@@ -37,6 +27,17 @@ In case you want to update the submodule to its latest version, you can do so wi
 ```
 git submodule update --remote
 ```
+
+**Disclaimer:** 
+For comparison purposes, this toolbox also includes demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
+
+- To run the SEDS learning demo script, download SEDS implementation from 
+```
+git clone https://bitbucket.org/khansari/seds SEDS 
+```
+and place it in the ```thirdparty/seds``` folder. 
+- To run the diffeomorphic matching [3] learning script, please contact the authors to get the MATLAB code and place it in the ```thirdparty/diffeomorphicmatching``` folder. 
+
 ### Instructions and Content
 .. Comments here.. introduce approach..
 
