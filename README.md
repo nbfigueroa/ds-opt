@@ -1,9 +1,9 @@
 # ds-opt
-Toolbox including optimization techniques for estimation of Globally Asymptotically Stable Dynamical Systems focused on (1) Linear Parameter Varying formulation with GMM-based mixing function and different Lyapunov candidate functions as proposed in [1], where a non-linear DS formulated as:
+Toolbox including optimization techniques for estimation of Globally Asymptotically Stable Dynamical Systems focused on Linear Parameter Varying formulation with GMM-based mixing function and different Lyapunov candidate functions as proposed in [1], where a non-linear DS formulated as:
 <p align="center">
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/f_x.gif"></>
                                                                            
-is learned from demonstrations in a decoupled manner. Where the GMM parameters <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/theta_gamma.gif"> used to parametrize <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/gamma.gif"> are estimated via the physically-consistent GMM approach proposed in [3] and provided in [phys-gmm](https://github.com/nbfigueroa/phys-gmm) and the DS parameters <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/DS_params.gif"> are estimated via semi-definite optimization problem that ensures global asymptotic stability of the system via constraints derived from either a:
+is learned from demonstrations in a decoupled manner. Where the GMM parameters <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/theta_gamma.gif"> used to parametrize <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/gamma.gif"> are estimated via the physically-consistent GMM approach proposed in [1] and provided in [phys-gmm](https://github.com/nbfigueroa/phys-gmm) and the DS parameters <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/DS_params.gif"> are estimated via semi-definite optimization problem that ensures global asymptotic stability of the system via constraints derived from either a:
 - QLF (Quadratic Lyapunov Function): <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/stab_qlf.gif">
 - P-QLF(Parametrized QLF):  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/img/stab_pqlf.gif">
 
@@ -15,38 +15,32 @@ This allows us to accurately encode highly non-linear, non-monotic trajectories 
 </>
   
 while ensuring global asymptotic stability. 
-
-**Disclaimer:** 
-For comparison purposes, this toolbox also includes demo scripts for DS learning with SEDS [2] and the diffeomorphic matching approach [3].  
-
-- To run the SEDS learning demo script, download SEDS implementation from 
-```
-git clone https://bitbucket.org/khansari/seds SEDS 
-```
-and place it in the ```thirdparty/``` folder. 
-- To run the diffeomorphic matching [3] learning script, please contact the authors to get the code and place it in the ```thirdparty/``` folder. 
   
-### Installation Instructions
-This package needs the **physically-consisent** GMM (PC-GMM) fitting proposed in [1] and implemented in [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git). If you do not already have this package, you can download it as a submodule. After cloning this repo, one must initialize/download the submodule with the following commands:
-```
-cd ~./ds_opt
-git submodule init
-git submodule update
-```
-In case you want to update the submodule to its latest version, you can do so with the following command:
-```
-git submodule update --remote
-```
-### Instructions and Content
-.. Comments here.. introduce approach..
+### Dependencies
+- **[Necessary]** [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git):  This package needs the **physically-consisent** GMM (PC-GMM) fitting proposed in [1]. Please download it, install its dependencies and place it in your MATLAB workspace path.
 
-##### Running the demo scripts
-There are three important demo scripts:
+- **[Optional]**: For comparison purposes, this toolbox also includes demo scripts for DS learning with SEDS [2].  
 
+  - To run the SEDS learning demo script, download SEDS implementation from 
+  ```
+  $ git clone https://bitbucket.org/khansari/seds SEDS 
+  ```
+  and place it in the ```thirdparty/seds``` folder.
+
+### Running the demo scripts
+Each ```demo_learn_*.m``` script includes self-explanatory code-block instructions to learn DS with: 
+- ```demo_learn_lpvds.m```: The proposed LPV-DS approach [1] allowing to test different mixing function estimation approaches and DS parameter constraint optimization variants.
+- ```demo_learn_seds.m```: The se-DS approach [2] allowing to test different estimation approaches for the intial GMM and different object functions for the DS optimization.
+
+#### Datasets
+In each of these scripts you can load the datasets shown below or any motion from the ``LASA Handwriting dataset``. Also with the ```demo_drawData_DS.m``` you can draw your own 2D datasets on a GUI and 
+
+#### Incremental Algorithm
+The ``demo_incremental_lpvDS.m`` script shows an implementation of the incremental learning framework proposed in [1] using the 2D datasets used in the paper or by drawing your own 2D datasets!
 
 ### Example Datasets
 These examples + more datasets are provided in ```
-./datasets``` folder. Following we show some **notably challenging motions** that cannot be accurately encoded with SEDS [3] **(1st Column)** or a PC-GMM-based LPV-DS [1] with a simple Quadradtic Lyapunov Function (QLF) **(2nd Column)**, yet can be correctly encoded with the proposed PC-GMM-based LPV-DS with a parametrized QLF (P-QLF) [1] **(3rd Column)** yielding comparable **(in some cases BETTER)** results than the global diffeomorphic matching approach **(4th Column)**, which is the state-of-the-art approach known to outperform SEDS.
+./datasets``` folder. Following we show some **notably challenging motions** that cannot be accurately encoded with SEDS [3] **(1st Column)** or a PC-GMM-based LPV-DS [1] with a simple Quadradtic Lyapunov Function (QLF) **(2nd Column)**, yet can be correctly encoded with the proposed PC-GMM-based LPV-DS with a parametrized QLF (P-QLF) [1] **(3rd Column)** yielding comparable **(in some cases BETTER)** results than the global diffeomorphic matching approach [3] **(4th Column)**, which is the state-of-the-art approach known to outperform SEDS. To reproduce result for the latter, please contact the original authors of that paper.
 
 -  **2D S-shape Dataset**  
 <p align="center">
