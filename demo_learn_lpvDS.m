@@ -39,7 +39,6 @@ close all; clear all; clc
 % 8:  CShape bottom         (3D) -- 16 trajectories recorded at 100Hz
 % 9:  CShape top            (3D) -- 12 trajectories recorded at 100Hz
 % 10: CShape all            (3D) -- x trajectories recorded at 100Hz
-% 11: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
 chosen_dataset  =10; 
@@ -161,6 +160,7 @@ else
     % P-matrix learning
 %     [Vxf] = learn_wsaqf(Data,0,att);
    
+    % (Data shifted to the origin)
     % Assuming origin is the attractor (works better generally)
     [Vxf] = learn_wsaqf(Data_sh);
     P_opt = Vxf.P;
