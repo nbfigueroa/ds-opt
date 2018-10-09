@@ -1,10 +1,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Demo Code for GMM-based LPV-DS Learning introduced in paper:            %
+% Demo Script for GMM-based LPV-DS Learning introduced in paper:          %
 %  'A Physically-Consistent Bayesian Non-Parametric Mixture Model for     %
-%   Dynamical System Learning.'                                           %
-% With this script you can load 2D toy trajectories or even real-world 
+%   Dynamical System Learning.'; N. Figueroa and A. Billard; CoRL 2018    %
+% With this script you can load 2D toy trajectories or even real-world    %
 % trajectories acquired via kinesthetic taching and test the different    %
 % GMM fitting approaches.                                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Copyright (C) 2018 Learning Algorithms and Systems Laboratory,          %
+% EPFL, Switzerland                                                       %
+% Author:  Nadia Figueroa                                                 % 
+% email:   nadia.figueroafernandez@epfl.ch                                %
+% website: http://lasa.epfl.ch                                            %
+%                                                                         %
+% This work was supported by the EU project Cogimon H2020-ICT-23-2014.    %
+%                                                                         %
+% Permission is granted to copy, distribute, and/or modify this program   %
+% under the terms of the GNU General Public License, version 2 or any     %
+% later version published by the Free Software Foundation.                %
+%                                                                         %
+% This program is distributed in the hope that it will be useful, but     %
+% WITHOUT ANY WARRANTY; without even the implied warranty of              %
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General%
+% Public License for more details                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 1 - OPTION 1 (DATA LOADING): Load CORL-paper Datasets %%
@@ -142,6 +160,8 @@ if constr_type == 0 || constr_type == 1
 else
     % P-matrix learning
 %     [Vxf] = learn_wsaqf(Data,0,att);
+   
+    % Assuming origin is the attractor (works better generally)
     [Vxf] = learn_wsaqf(Data_sh);
     P_opt = Vxf.P;
 end

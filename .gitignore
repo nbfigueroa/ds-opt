@@ -1,0 +1,8 @@
+build/
+*#*
+*~*
+doc/
+thirdparty/seds/*
+thirparty/diffeomorphicmatching/*
+demo_learn_diffDS.m
+for-video/*
