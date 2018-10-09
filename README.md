@@ -16,7 +16,7 @@ This allows us to accurately encode highly non-linear, non-monotic trajectories 
   
 while ensuring global asymptotic stability. 
 
---
+---
   
 ### Dependencies
 - **[Necessary]** [phys-gmm](https://github.com/nbfigueroa/phys-gmm.git):  This package needs the **physically-consisent** GMM (PC-GMM) fitting proposed in [1]. Please download it, install its dependencies and place it in your MATLAB workspace path.
@@ -29,7 +29,7 @@ while ensuring global asymptotic stability.
   ```
   and place it in the ```thirdparty/seds``` folder.
 
---
+---
 
 ### Running the demo scripts
 Each ```demo_learn_*.m``` script includes self-explanatory code-block instructions to learn DS with: 
@@ -42,7 +42,7 @@ In each of these scripts you can load the datasets shown below or any motion fro
 #### Incremental Algorithm
 The ``demo_incremental_lpvDS.m`` script shows an implementation of the incremental learning framework proposed in [1] using the 2D datasets used in the paper or by drawing your own 2D datasets!
 
---
+---
 
 ### Example Datasets
 These examples + more datasets are provided in ```
