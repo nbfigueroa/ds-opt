@@ -4,5 +4,7 @@ build/
 doc/
 thirdparty/seds/*
 thirparty/diffeomorphicmatching/*
+thirparty/CaptureFigVid/*
 demo_learn_diffDS.m
 for-video/*
+
