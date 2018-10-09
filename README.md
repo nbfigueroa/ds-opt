@@ -99,10 +99,10 @@ The following 3D datasets where collected via kinesthetic teaching of a KUKA LWR
 <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Sink_diff.png" width="270">
 </>
 
--  **3D Via-point Motion for "Production Line" Task**  
+-  **3D Via-point Motion for "Branding Line" Task**  
 <p align="center">
-  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/tasks/Scenario1_demo.gif" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO1.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_lpvO3.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_pc-gmm.png" width="290">
-<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point_diff.png" width="270">
+  <img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/branding-demo.gif" width="290"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point-paper_lpvO1_good.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point-paper_lpvO3_good.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point-paper_pc-gmm.png" width="290">
+<img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point-paper_seds.png" width="270"><img src="https://github.com/nbfigueroa/ds-opt/blob/master/figs/3D-Datasets/3D-Via-point-paper_diff.png" width="270">
 </>
   
 -  **3D Cshape-top Motion for "Shelf Arranging" Task**  
