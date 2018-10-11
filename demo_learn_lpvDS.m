@@ -36,14 +36,14 @@ close all; clear all; clc
 % 5:  Dual-behavior Dataset (2D) *
 % 6:  Via-point Dataset     (3D) * 9  trajectories recorded at 100Hz
 % 7:  Sink Dataset          (3D) * 11 trajectories recorded at 100Hz
-% 8:  CShape bottom         (3D) -- 16 trajectories recorded at 100Hz
-% 9:  CShape top            (3D) -- 12 trajectories recorded at 100Hz
+% 8:  CShape bottom         (3D) --16 trajectories recorded at 100Hz
+% 9:  CShape top            (3D) --12 trajectories recorded at 100Hz
 % 10: CShape all            (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  =10; 
+chosen_dataset  = 6; 
 sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 4; % For real 3D data only
+nb_trajectories = 9; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
@@ -56,7 +56,8 @@ Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);   
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned lpv-DS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '/3D-CShape-top/3D-CShape-top_pqlf_2';
+% DS_name = '/3D-Sink/3D-Sink_pqlf_2';
+DS_name = '3D-Via-point_pqlf_2';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 if constr_type == 1
@@ -180,7 +181,7 @@ end
 ds_plot_options = [];
 ds_plot_options.sim_traj  = 1;            % To simulate trajectories from x0_all
 ds_plot_options.x0_all    = x0_all;       % Intial Points
-ds_plot_options.init_type = 'ellipsoid';  % For 3D DS, to initialize streamlines
+ds_plot_options.init_type = 'cube';       % For 3D DS, to initialize streamlines
                                           % 'ellipsoid' or 'cube'  
 ds_plot_options.nb_points = 30;           % No of streamlines to plot (3D)
 ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
@@ -239,7 +240,6 @@ end
 h_vel = visualizeEstimatedVelocities(Data, ds_lpv);
 
 %% Optional save reference trajectories with computed velocities for C++ class testing
-
 xd_dot = [];
 % Simulate velocities from same reference trajectory
 for i=1:N
