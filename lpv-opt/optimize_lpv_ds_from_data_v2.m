@@ -14,7 +14,7 @@ K = length(gmm.Priors);
 A_c = zeros(N,N,K);
 b_c = zeros(N,K);
 
-% Define solver for type of constraints and Initialization (for NLP)
+% Define solver for type of constraints and Initialization
 switch ctr_type
     case 0
         sdp_options = sdpsettings('solver','sedumi','verbose', 1);

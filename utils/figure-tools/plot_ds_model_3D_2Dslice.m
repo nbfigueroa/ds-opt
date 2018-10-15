@@ -32,24 +32,24 @@ x = repmat(attractor,[1 length(d1_vec)]);
 
 if dimensions(1) == 1
     x(1,:) = d1_vec';
-    fprintf("First dimension is x \n");
+    fprintf('First dimension is x \n');
 elseif dimensions(1) == 2
     x(2,:) = d1_vec';
-    fprintf("First dimension is y \n");
+    fprintf('First dimension is y \n');
 elseif dimensions(1) == 3
     x(3,:) = d1_vec';
-    fprintf("First dimension is z \n");    
+    fprintf('First dimension is z \n');    
 end
 
 if dimensions(2) == 1
     x(1,:) = d2_vec';
-    fprintf("Second dimension is x \n");
+    fprintf('Second dimension is x \n');
 elseif dimensions(2) == 2
     x(2,:) = d2_vec';
-    fprintf("Second dimension is y \n");
+    fprintf('Second dimension is y \n');
 elseif dimensions(2) == 3
     x(3,:) = d2_vec';
-    fprintf("Second dimension is z \n");    
+    fprintf('Second dimension is z \n');    
 end
 
 xd = feval(ds, x);

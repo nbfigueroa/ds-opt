@@ -10,7 +10,7 @@ shifts = att_ - att;
 Data = []; Data_sh = []; x0_all = [];
 for l=1:N
     % Gather Data
-    data_ = data{l}(:,1:sub_sample:end);
+    data_ = data{l};
     shifts_ = repmat(shifts(:,l),[1 length(data_)]);
     data_(1:M,:)       = data_(1:M,:) - shifts_;
     data_(M+1:end,end) = zeros(M,1);

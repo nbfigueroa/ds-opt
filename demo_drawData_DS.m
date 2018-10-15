@@ -36,7 +36,7 @@ grid on
 % Draw Reference Trajectories
 [data, hp] = draw_mouse_data_on_DS(fig1, limits);
 
-% Process Drawn Data for DS learning
+%% Process Drawn Data for DS learning
 [Data, Data_sh, att, x0_all, dt] = processDrawnData(data);
 
 % Position/Velocity Trajectories

@@ -1,16 +1,13 @@
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%   Load one of the 3D Trajectories %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Load one of the 3D Datasets  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all; clc
-%%%%%%%%%%%%%%%%%%%%%%%%% Select a Dataset %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%% Select an Axis-Aligned Dataset %%%%%%%%%%%%%%%%%%%%%%%%%%
 % 6:  Via-point Dataset     (3D) * 9  trajectories recorded at 100Hz
 % 7:  Sink Dataset          (3D) * 11 trajectories recorded at 100Hz
-% 8:  CShape bottom         (3D) --16 trajectories recorded at 100Hz
-% 9:  CShape top            (3D) --12 trajectories recorded at 100Hz
-% 10: CShape all            (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 6; 
+chosen_dataset  = 7; 
 sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 9; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
@@ -28,7 +25,7 @@ Xi_dot_ref = Data(M+1:end,:);
 %% Load pre-learned lpv-DS model from Mat file  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DS_name = '/3D-Sink/3D-Sink_pqlf_2';
-DS_name = '3D-Via-point_pqlf_2';
+% DS_name = '3D-Via-point_pqlf_2';
 matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
 load(matfile)
 if constr_type == 1
@@ -56,7 +53,7 @@ ds_plot_options = [];
 ds_plot_options.sim_traj   = 1;      % To simulate trajectories from x0_all
 ds_plot_options.x0_all     = x0_all; % Initial Points for reproductions
 ds_plot_options.dimensions = yx;
-ds_plot_options.attractor  = att + [0 0 0.05]';
+ds_plot_options.attractor  = att + [0 0 0.005]';
 [hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_lpv, ds_plot_options);
 title('YX-slice of learned DS', 'Interpreter','LaTex','FontSize',20)
 
