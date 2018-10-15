@@ -97,7 +97,7 @@ est_options = [];
 est_options.type             = 0;   % GMM Estimation Alorithm Type   
 
 % If algo 1 selected:
-est_options.maxK             = 15;  % Maximum Gaussians for Type 1
+est_options.maxK             = 20;  % Maximum Gaussians for Type 1
 est_options.fixed_K          = [];  % Fix K and estimate with EM for Type 1
 
 % If algo 0 or 2 selected:
@@ -150,7 +150,7 @@ end
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%%% 
 % Type of constraints/optimization 
-constr_type = 0;      % 0:'convex':     A' + A < 0 (Proposed in paper)
+constr_type = 2;      % 0:'convex':     A' + A < 0 (Proposed in paper)
                       % 1:'non-convex': A'P + PA < 0 (Sina's Thesis approach - not suitable for 3D)
                       % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
 init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx                
@@ -198,7 +198,7 @@ switch constr_type
 end
 
 %% %%%%%%%%%%%%   Export DS parameters to Mat/Txt/Yaml files  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-Via-point_qlf_2';
+DS_name = '2d-W-Nav';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
 
 %% Save LPV-DS parameters to text files
@@ -206,7 +206,7 @@ DS_name = '3D-CShape-top-pqlf-2';
 save_lpvDS_to_txt(DS_name, pkg_dir,  ds_gmm, A_k, att)
 
 %% Save LPV-DS parameters to yaml file
-DS_name = '3D-pick-box-qlf';
+DS_name = '2D-W-Nav';
 % To use the rest of the code you need a matlab yaml convertor
 % you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
 save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, dt)
