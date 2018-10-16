@@ -197,6 +197,12 @@ switch constr_type
         title('GMM-based LPV-DS with P-QLF', 'Interpreter','LaTex','FontSize',20)
 end
 
+% Draw Obstacles
+obst_pos = [2.5 -2; 5 0; 7.5 -2];
+for m=1:size(obst_pos,1)
+    rectangle('Position',[obst_pos(m,1)-0.25 obst_pos(m,2)-0.25 0.5 0.5], 'FaceColor',[.5 .5 .5]); hold on;
+end
+
 %% %%%%%%%%%%%%   Export DS parameters to Mat/Txt/Yaml files  %%%%%%%%%%%%%%%%%%%
 DS_name = '2d-W-Nav';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
