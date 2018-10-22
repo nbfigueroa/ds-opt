@@ -4,6 +4,7 @@ build/
 doc/
 thirdparty/seds/*
 thirparty/diffeomorphicmatching/*
+thridparty/matlab-neural-networks/*
 thirparty/CaptureFigVid/*
 demo_learn_diffDS.m
 for-video/*
