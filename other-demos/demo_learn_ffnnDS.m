@@ -85,7 +85,7 @@ Xi_dot_ref = Data(M+1:end,:);
 % 2 hidden layers
 ds_neuralNet  =  feedforwardnet([M*5 M*2]);
 
-%% Train network using Levenberg-Marquardt
+%% Train network using Levenberg-Marquardt Back-Propagation
 [ds_neuralNet,tr] = train(ds_neuralNet,Xi_ref,Xi_dot_ref);
 
 % Function handle for neural net evaluation
