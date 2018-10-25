@@ -101,7 +101,7 @@ est_options.maxK             = 20;  % Maximum Gaussians for Type 1
 est_options.fixed_K          = [];  % Fix K and estimate with EM for Type 1
 
 % If algo 0 or 2 selected:
-est_options.samplerIter      = 40;  % Maximum Sampler Iterations
+est_options.samplerIter      = 50;  % Maximum Sampler Iterations
                                     % For type 0: 20-50 iter is sufficient
                                     % For type 2: >100 iter are needed
                                     
@@ -198,10 +198,10 @@ switch constr_type
 end
 
 % Draw Obstacles
-obst_pos = [2.5 -2; 5 0; 7.5 -2];
-for m=1:size(obst_pos,1)
-    rectangle('Position',[obst_pos(m,1)-0.25 obst_pos(m,2)-0.25 0.5 0.5], 'FaceColor',[.5 .5 .5]); hold on;
-end
+% obst_pos = [2.5 -2; 5 0; 7.5 -2];
+% for m=1:size(obst_pos,1)
+%     rectangle('Position',[obst_pos(m,1)-0.25 obst_pos(m,2)-0.25 0.5 0.5], 'FaceColor',[.5 .5 .5]); hold on;
+% end
 
 %% %%%%%%%%%%%%   Export DS parameters to Mat/Txt/Yaml files  %%%%%%%%%%%%%%%%%%%
 DS_name = '2d-U-Nav';

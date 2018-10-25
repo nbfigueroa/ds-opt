@@ -42,7 +42,7 @@ sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 9; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
-% Position/Velocity Trajectories
+%% Position/Velocity Trajectories
 vel_samples = 10; vel_size = 0.5; 
 [h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
 
@@ -77,13 +77,15 @@ Xi_dot_ref = Data(M+1:end,:);
 
 % Train a Feed-Forward Neural Network as a function approximator for f(x)
 
-% Generate network with random weights
-
+% Generate network structure with random weights
 % 1 hidden layer
-% ds_neuralNet  =  feedforwardnet(M*5);
+ds_neuralNet  =  feedforwardnet(M*5);
 
 % 2 hidden layers
-ds_neuralNet  =  feedforwardnet([M*5 M*2]);
+% ds_neuralNet  =  feedforwardnet([M*5 M*3]);
+
+% 3 hidden layers
+% ds_neuralNet  =  feedforwardnet([M*5 M*3 M*2]);
 
 %% Train network using Levenberg-Marquardt Back-Propagation
 [ds_neuralNet,tr] = train(ds_neuralNet,Xi_ref,Xi_dot_ref);
@@ -104,6 +106,7 @@ ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
 [hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_nn, ds_plot_options);
 limits = axis;
 title('Unconstrained Feed Forward NN-based DS ', 'Interpreter','LaTex','FontSize',20)
+h_att = scatter(att(1),att(2),150,[0 0 0],'d','Linewidth',2); hold on;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%

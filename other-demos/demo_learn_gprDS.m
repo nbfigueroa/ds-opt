@@ -108,6 +108,7 @@ ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
 [hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_gpr, ds_plot_options);
 limits = axis;
 title('Unconstrained GPR-based DS ', 'Interpreter','LaTex','FontSize',20)
+h_att = scatter(att(1),att(2),150,[0 0 0],'d','Linewidth',2); hold on;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%
