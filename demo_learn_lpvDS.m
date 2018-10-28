@@ -94,7 +94,7 @@ Xi_dot_ref = Data(M+1:end,:);
 % 1: GMM-EM Model Selection via BIC
 % 2: CRP-GMM (Collapsed Gibbs Sampler)
 est_options = [];
-est_options.type             = 0;   % GMM Estimation Alorithm Type   
+est_options.type             = 1;   % GMM Estimation Alorithm Type   
 
 % If algo 1 selected:
 est_options.maxK             = 20;  % Maximum Gaussians for Type 1

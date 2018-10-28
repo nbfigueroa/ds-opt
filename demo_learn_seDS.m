@@ -88,7 +88,7 @@ Xi_dot_ref = Data_sh(M+1:end,:);
 % 'seds-init': follows the initialization given in the SEDS code
 % 0: Manually set the # of Gaussians
 % 1: Do Model Selection with BIC
-do_ms_bic = 1;
+do_ms_bic = 0;
 
 if do_ms_bic
     est_options = [];
@@ -102,7 +102,7 @@ if do_ms_bic
     nb_gaussians = length(Priors0);
 else
     % Select manually the number of Gaussian components
-    nb_gaussians = 5;
+    nb_gaussians = 4;
 end
 
 % Finding an initial guess for GMM's parameter
