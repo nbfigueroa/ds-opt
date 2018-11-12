@@ -94,11 +94,11 @@ Xi_dot_ref = Data(M+1:end,:);
 % 1: GMM-EM Model Selection via BIC
 % 2: CRP-GMM (Collapsed Gibbs Sampler)
 est_options = [];
-est_options.type             = 1;   % GMM Estimation Alorithm Type   
+est_options.type             = 0;   % GMM Estimation Alorithm Type   
 
 % If algo 1 selected:
 est_options.maxK             = 20;  % Maximum Gaussians for Type 1
-est_options.fixed_K          = [];  % Fix K and estimate with EM for Type 1
+est_options.fixed_K          = 15;  % Fix K and estimate with EM for Type 1
 
 % If algo 0 or 2 selected:
 est_options.samplerIter      = 50;  % Maximum Sampler Iterations
@@ -106,7 +106,7 @@ est_options.samplerIter      = 50;  % Maximum Sampler Iterations
                                     % For type 2: >100 iter are needed
                                     
 est_options.do_plots         = 1;   % Plot Estimation Statistics
-est_options.sub_sample       = 2;   % Size of sub-sampling of trajectories
+est_options.sub_sample       = 1;   % Size of sub-sampling of trajectories
                                     % 1/2 for 2D datasets, >2/3 for real    
 % Metric Hyper-parameters
 est_options.estimate_l       = 1;   % '0/1' Estimate the lengthscale, if set to 1
@@ -131,6 +131,7 @@ adjusts_C  = 1;
 if adjusts_C  == 1 
     if M == 2
         tot_dilation_factor = 1; rel_dilation_fact = 0.25;
+        tot_dilation_factor = 1; rel_dilation_fact = 0.2;
     elseif M == 3
         tot_dilation_factor = 1; rel_dilation_fact = 0.75;        
     end

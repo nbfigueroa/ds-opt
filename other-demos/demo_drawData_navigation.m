@@ -39,10 +39,12 @@ for m=1:size(obst_pos,1)
     rectangle('Position',[obst_pos(m,1)-0.25 obst_pos(m,2)-0.25 0.5 0.5], 'FaceColor',[.5 .5 .5]); hold on;
 end
 
+h_att = scatter(8.5,3,150,[0 0 0],'d','Linewidth',2); hold on;
+
 % Draw Reference Trajectories
 [data, hp] = draw_mouse_data_on_DS(fig1, limits);
 
-% Process Drawn Data for DS learning
+%% Process Drawn Data for DS learning
 [Data, Data_sh, att, x0_all, dt] = processDrawnData(data);
 
 % Position/Velocity Trajectories
@@ -54,6 +56,7 @@ vel_samples = 10; vel_size = 0.5;
 M          = size(Data,1)/2;    
 Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);  
+
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% To use this dataset go to the demo_loadData_*.m scripts %
 %% and start with the[Step 2] block of code                %

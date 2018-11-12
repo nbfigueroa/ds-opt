@@ -6,7 +6,7 @@ for n=1:N
     att_ = [att_ data{n}(1:M,end)];
 end
 att = mean(att_,2);
-shifts = att_ - att;
+shifts = att_ - repmat(att, [1 length(att_)]);
 Data = []; Data_sh = []; x0_all = [];
 for l=1:N
     % Gather Data
