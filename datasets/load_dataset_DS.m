@@ -59,13 +59,16 @@ else
     data_ = data_.data;
     N = length(data_);    
     data = []; 
-    traj = randsample(N, nb_trajectories)'
+    traj = randsample(N, nb_trajectories)';
     for l=1:nb_trajectories
         % Gather Data
         if dataset ==  11
             d_ = data_{traj(l)}(:,1:sub_sample:end);
             world = [-3.486; -1.841; 0; 0; 0; 0];
-            data{l} = d_ - world;
+            d_ = d_ - world;
+            d_ = [-1 1 1 -1 1 1]'.*d_;
+            d_ = [1 -1 1 1 -1 1]'.*d_;
+            data{l} = d_;
         else
             data{l} = data_{traj(l)}(:,1:sub_sample:end);
         end

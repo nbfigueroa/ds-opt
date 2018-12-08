@@ -217,7 +217,7 @@ DS_name = '3D-CShape-top-pqlf-2';
 save_lpvDS_to_txt(DS_name, pkg_dir,  ds_gmm, A_k, att)
 
 %% Save LPV-DS parameters to yaml file
-DS_name = 'iCub-C-Loco';
+DS_name = 'iCub-Cshape-Loco';
 % To use the rest of the code you need a matlab yaml convertor
 % you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
 save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, dt)
