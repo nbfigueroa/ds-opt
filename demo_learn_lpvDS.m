@@ -36,24 +36,34 @@ close all; clear all; clc
 % 5:  Dual-behavior Dataset (2D) *
 % 6:  Via-point Dataset     (3D) * 9  trajectories recorded at 100Hz
 % 7:  Sink Dataset          (3D) * 11 trajectories recorded at 100Hz
-% 8:  CShape bottom         (3D) --16 trajectories recorded at 100Hz
+% 8:  CShape bottom         (3D) * 16 trajectories recorded at 100Hz
 % 9:  CShape top            (3D) --12 trajectories recorded at 100Hz
 % 10: CShape all            (3D) -- x trajectories recorded at 100Hz
+% 11: Flat-C for loco-manip (2D) * 3 trajectories recorded at 100Hz (downsampled to 50Hz)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 6; 
-sub_sample      = 2; % '>2' for real 3D Datasets, '1' for 2D toy datasets
-nb_trajectories = 9; % For real 3D data only
+chosen_dataset  = 11; 
+sub_sample      = 5; % '>2' for real 3D Datasets, '1' for 2D toy datasets
+nb_trajectories = 3; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
 
 % Position/Velocity Trajectories
-vel_samples = 10; vel_size = 0.5; 
+vel_samples = 50; vel_size = 0.75; 
 [h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
 
 % Extract Position and Velocities
 M          = size(Data,1)/2;    
 Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);   
+
+%% If iCub data ---> make 2D for nice visualization
+M          = 2;    
+Xi_ref     = Data(1:M,:);
+Xi_dot_ref = Data(M+2:end-1,:);   
+Data       = Data([1:M M+2:end-1],:);
+Data_sh    = Data_sh([1:M M+2:end-1],:);
+att        = att(1:M,1);
+x0_all     = x0_all(1:M,:);
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned lpv-DS model from Mat file  %%%%%%%%%%%%%%%%%%%
 % DS_name = '/3D-Sink/3D-Sink_pqlf_2';
@@ -97,8 +107,8 @@ est_options = [];
 est_options.type             = 0;   % GMM Estimation Alorithm Type   
 
 % If algo 1 selected:
-est_options.maxK             = 20;  % Maximum Gaussians for Type 1
-est_options.fixed_K          = 15;  % Fix K and estimate with EM for Type 1
+est_options.maxK             = 10;  % Maximum Gaussians for Type 1
+est_options.fixed_K          = [];  % Fix K and estimate with EM for Type 1
 
 % If algo 0 or 2 selected:
 est_options.samplerIter      = 50;  % Maximum Sampler Iterations
@@ -106,7 +116,7 @@ est_options.samplerIter      = 50;  % Maximum Sampler Iterations
                                     % For type 2: >100 iter are needed
                                     
 est_options.do_plots         = 1;   % Plot Estimation Statistics
-est_options.sub_sample       = 1;   % Size of sub-sampling of trajectories
+est_options.sub_sample       = 5;   % Size of sub-sampling of trajectories
                                     % 1/2 for 2D datasets, >2/3 for real    
 % Metric Hyper-parameters
 est_options.estimate_l       = 1;   % '0/1' Estimate the lengthscale, if set to 1
@@ -130,7 +140,7 @@ clear ds_gmm; ds_gmm.Mu = Mu; ds_gmm.Sigma = Sigma; ds_gmm.Priors = Priors;
 adjusts_C  = 1;
 if adjusts_C  == 1 
     if M == 2
-        tot_dilation_factor = 1; rel_dilation_fact = 0.25;
+%         tot_dilation_factor = 1; rel_dilation_fact = 0.25;
         tot_dilation_factor = 1; rel_dilation_fact = 0.2;
     elseif M == 3
         tot_dilation_factor = 1; rel_dilation_fact = 0.75;        
@@ -198,12 +208,6 @@ switch constr_type
         title('GMM-based LPV-DS with P-QLF', 'Interpreter','LaTex','FontSize',20)
 end
 
-% Draw Obstacles
-% obst_pos = [2.5 -2; 5 0; 7.5 -2];
-% for m=1:size(obst_pos,1)
-%     rectangle('Position',[obst_pos(m,1)-0.25 obst_pos(m,2)-0.25 0.5 0.5], 'FaceColor',[.5 .5 .5]); hold on;
-% end
-
 %% %%%%%%%%%%%%   Export DS parameters to Mat/Txt/Yaml files  %%%%%%%%%%%%%%%%%%%
 DS_name = '2d-U-Nav';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
@@ -213,7 +217,7 @@ DS_name = '3D-CShape-top-pqlf-2';
 save_lpvDS_to_txt(DS_name, pkg_dir,  ds_gmm, A_k, att)
 
 %% Save LPV-DS parameters to yaml file
-DS_name = '2D-U-Nav';
+DS_name = 'iCub-C-Loco';
 % To use the rest of the code you need a matlab yaml convertor
 % you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
 save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, dt)

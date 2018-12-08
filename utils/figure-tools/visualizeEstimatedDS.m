@@ -24,8 +24,10 @@ end
 % Simulate trajectories and plot them on top
 if plot_repr
     opt_sim = [];
-    opt_sim.dt = 0.01;
-    opt_sim.i_max = 5000;
+%     opt_sim.dt = 0.01;
+    opt_sim.dt = 0.02;
+%     opt_sim.i_max = 5000;
+    opt_sim.i_max = 10000;
     opt_sim.tol = 0.005;
     opt_sim.plot = 0;
     [x_sim, ~] = Simulation(x0_all ,[],ds_fun, opt_sim);

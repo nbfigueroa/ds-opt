@@ -21,7 +21,9 @@ switch dataset
     case 9
         dataset_name = '3D_Cshape_top.mat';                       
     case 10
-        dataset_name = '3D-pick-box.mat';                       
+        dataset_name = '3D-pick-box.mat';       
+    case 11
+        dataset_name = 'iCubHuman_demos.mat';       
 end
 
 if isempty(sub_sample)
@@ -53,13 +55,20 @@ elseif dataset <= 5
 % Processing for the 3D Datasets
 else
     data_ = load(strcat(pkg_dir,'/datasets/',dataset_name));
+    dt = data_.dt;
     data_ = data_.data;
     N = length(data_);    
-    data = []; dt = 0.01;
+    data = []; 
     traj = randsample(N, nb_trajectories)'
     for l=1:nb_trajectories
         % Gather Data
-        data{l} = data_{traj(l)}(:,1:sub_sample:end);
+        if dataset ==  11
+            d_ = data_{traj(l)}(:,1:sub_sample:end);
+            world = [-3.486; -1.841; 0; 0; 0; 0];
+            data{l} = d_ - world;
+        else
+            data{l} = data_{traj(l)}(:,1:sub_sample:end);
+        end
     end
     [Data, Data_sh, att, x0_all, ~, data] = processDataStructure(data);
 end
