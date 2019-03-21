@@ -2,6 +2,8 @@ function [hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_fun, ds_plot_opti
 fig1 = figure('Color',[1 1 1]);
 M = size(Xi_ref,1);
 
+
+
 % Parse Options
 plot_repr   = ds_plot_options.sim_traj;
 x0_all      = ds_plot_options.x0_all;
@@ -39,8 +41,12 @@ end
 % Plot Streamlines
 if M == 2 
     [hd] = scatter(Xi_ref(1,:),Xi_ref(2,:),10,[1 0 0],'filled'); hold on
-    limits = axis;
-    limits_ = limits + [-0.015 0.015 -0.015 0.015];
+    if isfield(ds_plot_options,'limits')
+        limits_ = ds_plot_options.limits;
+    else
+        limits = axis;
+        limits_ = limits + [-0.015 0.015 -0.015 0.015];
+    end
     [hs] = plot_ds_model(fig1, ds_fun, [0 0]', limits_,'medium'); hold on;
     axis(limits_)
     box on
@@ -60,8 +66,12 @@ elseif M == 3
         
         % Plot Demonstrations in red
         [hd] = scatter(Xi_ref_2d(1,:),Xi_ref_2d(2,:),10,[1 0 0],'filled'); hold on
-        limits = axis;
-        limits_ = limits + [-0.015 0.015 -0.015 0.015];
+        if isfield(ds_plot_options,'limits')
+            limits_ = ds_plot_options.limits;
+        else
+            limits = axis;
+            limits_ = limits + [-0.015 0.015 -0.015 0.015];
+        end
         
         % Plot Streamlines of 2D slice in blue
         [hs] = plot_ds_model_3D_2Dslice(fig1, ds_fun, attractor, limits_, dimensions, 'medium'); hold on;       

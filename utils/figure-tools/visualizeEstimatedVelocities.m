@@ -19,6 +19,8 @@ if M == 2
     plot(xd_dot(1,:)','--','Color',[0 0 1], 'LineWidth', 1); hold on;
     plot(xd_dot(2,:)','--','Color',[1 0 0], 'LineWidth', 1); hold on;
     legend({'$\dot{\xi}^{ref}_{1}$','$\dot{\xi}^{ref}_{2}$','$\dot{\xi}^{d}_{1}$','$\dot{\xi}^{d}_{2}$'}, 'Interpreter', 'LaTex', 'FontSize', 15)    
+    grid on;
+    
 elseif M == 3
     plot(Data(4,:)', '.-','Color',[0 0 1], 'LineWidth',1); hold on;
     plot(Data(5,:)', '.-','Color',[1 0 0], 'LineWidth',1); hold on;
@@ -28,7 +30,33 @@ elseif M == 3
     plot(xd_dot(3,:)','--','Color',[0 1 0], 'LineWidth', 1); hold on;
     legend({'$\dot{\xi}^{ref}_{1}$','$\dot{\xi}^{ref}_{2}$','$\dot{\xi}^{ref}_{3}$',...,
         '$\dot{\xi}^{d}_{1}$','$\dot{\xi}^{d}_{2}$', '$\dot{\xi}^{d}_{3}$'}, 'Interpreter', 'LaTex', 'FontSize', 15)            
+    grid on;
+    
+elseif M == 6 
+    subplot(2,1,1)
+    plot(Data(7,:)', '.-','Color',[0 0 1], 'LineWidth',1); hold on;
+    plot(Data(8,:)', '.-','Color',[1 0 0], 'LineWidth',1); hold on;
+    plot(Data(9,:)', '.-','Color',[0 1 0], 'LineWidth',1); hold on;
+    plot(xd_dot(1,:)','--','Color',[0 0 1], 'LineWidth', 1); hold on;
+    plot(xd_dot(2,:)','--','Color',[1 0 0], 'LineWidth', 1); hold on;
+    plot(xd_dot(3,:)','--','Color',[0 1 0], 'LineWidth', 1); hold on;
+    legend({'$\dot{x}^{ref}_{1}$','$\dot{\xi}^{ref}_{2}$','$\dot{\xi}^{ref}_{3}$',...,
+        '$\dot{\xi}^{d}_{1}$','$\dot{\xi}^{d}_{2}$', '$\dot{\xi}^{d}_{3}$'}, 'Interpreter', 'LaTex', 'FontSize', 15)            
+
+    grid on;
+    
+    
+    subplot(2,1,2)
+    plot(Data(10,:)', '.-','Color',[0 0 1], 'LineWidth',1); hold on;
+    plot(Data(11,:)', '.-','Color',[1 0 0], 'LineWidth',1); hold on;
+    plot(Data(12,:)', '.-','Color',[0 1 0], 'LineWidth',1); hold on;    
+    plot(xd_dot(4,:)','--','Color',[0 0 1], 'LineWidth', 1); hold on;
+    plot(xd_dot(5,:)','--','Color',[1 0 0], 'LineWidth', 1); hold on;
+    plot(xd_dot(6,:)','--','Color',[0 1 0], 'LineWidth', 1); hold on;
+    legend({'$\dot{\xi}^{ref}_{1}$','$\dot{\xi}^{ref}_{2}$','$\dot{\xi}^{ref}_{3}$',...,
+        '$\dot{\xi}^{d}_{1}$','$\dot{\xi}^{d}_{2}$', '$\dot{\xi}^{d}_{3}$'}, 'Interpreter', 'LaTex', 'FontSize', 15)            
+    grid on;
 end
-grid on;
+
 title('Real vs Estimated Velocities', 'Interpreter', 'LaTex', 'FontSize', 15)
 end

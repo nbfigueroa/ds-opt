@@ -42,7 +42,7 @@ close all; clear all; clc
 % 11: Flat-C for loco-manip (2D) * 3 trajectories recorded at 100Hz (downsampled to 50Hz)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 11; 
+chosen_dataset  = 9; 
 sub_sample      = 5; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 3; % For real 3D data only
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
@@ -55,15 +55,6 @@ vel_samples = 50; vel_size = 0.75;
 M          = size(Data,1)/2;    
 Xi_ref     = Data(1:M,:);
 Xi_dot_ref = Data(M+1:end,:);   
-
-%% If iCub data ---> make 2D for nice visualization
-M          = 2;    
-Xi_ref     = Data(1:M,:);
-Xi_dot_ref = Data(M+2:end-1,:);   
-Data       = Data([1:M M+2:end-1],:);
-Data_sh    = Data_sh([1:M M+2:end-1],:);
-att        = att(1:M,1);
-x0_all     = x0_all(1:M,:);
 
 %% %%%%%%%%%%%% [Optional] Load pre-learned lpv-DS model from Mat file  %%%%%%%%%%%%%%%%%%%
 % DS_name = '/3D-Sink/3D-Sink_pqlf_2';
@@ -104,7 +95,7 @@ Xi_dot_ref = Data(M+1:end,:);
 % 1: GMM-EM Model Selection via BIC
 % 2: CRP-GMM (Collapsed Gibbs Sampler)
 est_options = [];
-est_options.type             = 0;   % GMM Estimation Alorithm Type   
+est_options.type             = 1;   % GMM Estimation Alorithm Type   
 
 % If algo 1 selected:
 est_options.maxK             = 10;  % Maximum Gaussians for Type 1
@@ -207,7 +198,7 @@ switch constr_type
     case 2
         title('GMM-based LPV-DS with P-QLF', 'Interpreter','LaTex','FontSize',20)
 end
-
+axis fit;
 %% %%%%%%%%%%%%   Export DS parameters to Mat/Txt/Yaml files  %%%%%%%%%%%%%%%%%%%
 DS_name = '2d-U-Nav';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
@@ -217,7 +208,7 @@ DS_name = '3D-CShape-top-pqlf-2';
 save_lpvDS_to_txt(DS_name, pkg_dir,  ds_gmm, A_k, att)
 
 %% Save LPV-DS parameters to yaml file
-DS_name = 'iCub-Cshape-Loco';
+DS_name = 'iCub-CshapeRotated-Loco';
 % To use the rest of the code you need a matlab yaml convertor
 % you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
 save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, dt)

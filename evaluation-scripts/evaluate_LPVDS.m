@@ -329,7 +329,7 @@ lpv_train_std_O2  = std(lpv_rmse_train_O2(:));
 fprintf('Overall RMSE on Training Set %2.2f +/- %2.2f\n', lpv_train_mean_O2, lpv_train_std_O2);
 lpv_test_mean_O2 = mean(lpv_rmse_test_O2(:));
 lpv_test_std_O2  = std(lpv_rmse_test_O2(:));
-fprintf('Overall RMSE on Testing Set %2.2f +/- %2.2f\n', lpv_test_mean_O2, lpv_test_std_O2);
+fprintf('Overall RMSE on Testing Set %2.2f +/- %2.2f\n', lpv_test_meanDave Chen Pao_O2, lpv_test_std_O2);
 
 lpv_train_mean_edot_O2 = mean(lpv_edot_train_O2(:));
 lpv_train_std_edot_O2  = std(lpv_edot_train_O2(:));
