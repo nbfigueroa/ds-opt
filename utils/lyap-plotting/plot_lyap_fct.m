@@ -37,9 +37,13 @@ switch min_max
             maximum_vdot = 0;
         end
         hold on; scatter3(x(1,max_id_vdot),x(2,max_id_vdot),maximum_vdot,100,[1 1 0],'filled');
+        
+        maximum_vdot
+        x_att_est = [x(1,max_id_vdot);x(2,max_id_vdot)]
+        
 end
 hold on;
-title(title_string, 'Interpreter','LaTex','FontSize', 18);
+title(title_string, 'Interpreter','LaTex','FontSize', 16);
 xlabel('$\xi_1$','Interpreter','LaTex','FontSize',20);
 ylabel('$\xi_2$','Interpreter','LaTex','FontSize',20);
 end

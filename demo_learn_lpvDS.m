@@ -183,7 +183,7 @@ end
 ds_plot_options = [];
 ds_plot_options.sim_traj  = 1;            % To simulate trajectories from x0_all
 ds_plot_options.x0_all    = x0_all;       % Intial Points
-ds_plot_options.init_type = 'cube';       % For 3D DS, to initialize streamlines
+ds_plot_options.init_type = 'ellipsoid';       % For 3D DS, to initialize streamlines
                                           % 'ellipsoid' or 'cube'  
 ds_plot_options.nb_points = 30;           % No of streamlines to plot (3D)
 ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)

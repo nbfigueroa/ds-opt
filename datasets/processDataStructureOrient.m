@@ -1,4 +1,4 @@
-function [Data, Data_sh, att, x0_all, dt, data] = processDataStructure3(data, sub_sample)
+function [Data, Data_sh, att, x0_all, dt, data, Hdata] = processDataStructureOrient(data, Hdata, sub_sample)
 
 % Computing the attractor and shifting all the trajectories
 N = length(data);att_ = [];
@@ -18,6 +18,14 @@ for l=1:N
     data_(M+1:end,end-1) = (data_(M+1:end,end) + zeros(M,1))/2;
     data_(M+1:end,end-2) = (data_(M+1:end,end-2) + data_(M+1:end,end-1))/2;
     Data = [Data data_];
+    
+    % Shift reference trajectories in Hdata structure
+    clear H
+    H = Hdata{l};
+    for h=1:length(H)
+        H(1:M,4,h) = H(1:M,4,h) - shifts(:,l);
+    end
+    Hdata{l} = H;
     
     % All starting position for reproduction accuracy comparison
     x0_all = [x0_all data_(1:M,1)];

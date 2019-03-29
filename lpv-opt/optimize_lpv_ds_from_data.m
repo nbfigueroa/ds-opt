@@ -191,12 +191,3 @@ end
 
 end
 
-%%%%% Using Sina's Code for (O1) -- will work if I have it in the path
-% p = ds_gmm.Priors;
-% m = ds_gmm.Mu;
-% s = ds_gmm.Sigma;
-% [~,~,~,Stable.A,time_CON, P_est]=Learn_The_convex_Stable_problem(p, m, s, Data);
-% 
-% % The out-pout is 
-% A_g = Stable.A;
-% b_g = zeros(2,est_K);

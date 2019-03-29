@@ -28,8 +28,22 @@
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Step 1 (Load Datasets): Trajectories recorded by Salman from Gazebo %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+close all; clear all; clc
+pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
+load(strcat(pkg_dir,'datasets/icub_gazebo_demos/icub_data'))
 
+% Position/Velocity Trajectories
+vel_samples = 50; vel_size = 0.75; 
+[h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
 
+% Draw Wall
+rectangle('Position',[-1 1 6 1], 'FaceColor',[.85 .85 .85]); hold on;
+limits = axis;
+
+% Extract Position and Velocities
+M          = size(Data,1)/2;    
+Xi_ref     = Data(1:M,:);
+Xi_dot_ref = Data(M+1:end,:);   
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 2 (GMM FITTING): Fit GMM to Trajectory Data %%
@@ -51,7 +65,7 @@ est_options.samplerIter      = 50;  % Maximum Sampler Iterations
                                     % For type 2: >100 iter are needed
                                     
 est_options.do_plots         = 1;   % Plot Estimation Statistics
-est_options.sub_sample       = 2;   % Size of sub-sampling of trajectories
+est_options.sub_sample       = 5;   % Size of sub-sampling of trajectories
                                     % 1/2 for 2D datasets, >2/3 for real    
 % Metric Hyper-parameters
 est_options.estimate_l       = 1;   % '0/1' Estimate the lengthscale, if set to 1
@@ -134,7 +148,7 @@ ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
 ds_plot_options.limits    = limits;
 
 [hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_lpv, ds_plot_options);
-rectangle('Position',[-1 1 6 1], 'FaceColor',[.5 .5 .5]); hold on;
+rectangle('Position',[-1 1 6 1], 'FaceColor',[.85 .85 .85]); hold on;
 h_att = scatter(0,3, 150, [0 0 0],'d','Linewidth',2); hold on;
 h_att = scatter(0,0, 150, [0 1 0],'d','Linewidth',2); hold on;
 
@@ -149,15 +163,15 @@ switch constr_type
 end
 axis tight;
 %% %%%%%%%%%%%%   Export DS parameters to Mat/Txt/Yaml files  %%%%%%%%%%%%%%%%%%%
-DS_name = 'coManip-DS-0';
+DS_name = 'icub-Object-DS-1';
 save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
 
 %% Save LPV-DS parameters to text files
-DS_name = 'coManip-DS-0';
+DS_name = 'icub-Object-DS-1';
 save_lpvDS_to_txt(DS_name, pkg_dir,  ds_gmm, A_k, att)
 
 %% Save LPV-DS parameters to yaml file
-DS_name = 'coManip-DS-0';
+DS_name = 'icub-Object-DS-1';
 % To use the rest of the code you need a matlab yaml convertor
 % you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
 save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, dt)

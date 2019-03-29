@@ -26,5 +26,5 @@ x_ = x-repmat(target,1,size(x,2));
 xd = feval(ds, x_);
 h = streamslice(x_tmp,y_tmp,reshape(xd(1,:),ny,nx),reshape(xd(2,:),ny,nx),4,'method','cubic');
 set(h,'LineWidth', 0.75)
-% set(h,'color',[0.0667  0.0667 0.0667]);
+set(h,'color',[0.0667  0.0667 0.0667]);
 end

@@ -125,19 +125,20 @@ if Vxf0.SOS
     p0 = p0(:);
     Vxf0.L = -1; %to distinguish sos from other methods
 else
-    for l = 0:Vxf0.L
-        Vxf0.P(:,:,l+1) = Vxf0.P(:,:,l+1)\eye(d);
-    end
+%     for l = 0:Vxf0.L
+%         Vxf0.P(:,:,l+1) = Vxf0.P(:,:,l+1)\eye(d);
+%     end    
     
     %in order to set the first component to be the closest Gaussian to origin
-    [~, ind] = sort(Mat_Vec_Norm(Vxf0.Mu),'ascend');
-    Vxf0.Mu = Vxf0.Mu(:,ind);
-    Vxf0.P  = Vxf0.P(:,:,ind);
+    [~, ind]   = sort(Mat_Vec_Norm(Vxf0.Mu),'ascend');
+    Vxf0.Mu    = Vxf0.Mu(:,ind);
+    Vxf0.P     = Vxf0.P(:,:,ind);
+    Vxf0.tr_g  = trace(Vxf0.P(:,:,1))
     p0 = GMM_2_Parameters(Vxf0,options);
 end
 
 obj_handle = @(p) obj(p,x,xd,d,Vxf0.L,Vxf0.w,Vxf0.Mu, options);
-ctr_handle = @(p) ctr_eigenvalue(p,d,Vxf0.L,Vxf0.Mu,options);
+ctr_handle = @(p) ctr_eigenvalue(p,d,Vxf0.L,Vxf0.Mu, Vxf0.tr_g, options);
 % ctr_handle = @(p) my_ctr_eigenvalue(p,d,Vxf0.L,options);
 
 % Running the optimization
@@ -182,8 +183,8 @@ for l = 1:Vxf.L+1
 end
 % Vxf.P(:,:,1) = Vxf.P(:,:,1)/sumDet; % Original
 % To reduce spectral radius
-% Vxf.P(:,:,1) = Vxf.P(:,:,1)/sqrt(sumDet);
-% Vxf.P(:,:,2:end) = Vxf.P(:,:,2:end)/sqrt(sumDet);
+% Vxf.P(:,:,1) = Vxf.P(:,:,1);
+% Vxf.P(:,:,2:end) = Vxf.P(:,:,2:end)/sumDet;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [J, dJ]=obj(p,x,xd,d,L,w,Mu_fixed,options)
@@ -215,7 +216,7 @@ dJ = [];
 
 
 
-function [c ceq dc dceq]=ctr_eigenvalue(p,d,L,Mu_fixed,options)
+function [c ceq dc dceq]=ctr_eigenvalue(p,d,L,Mu_fixed, tr_g,  options)
 % This function computes the derivative of the constrains w.r.t.
 % optimization parameters.
 
@@ -248,21 +249,15 @@ if L == -1 %SOS
     c = -eig(Vxf.P + Vxf.P' - eye(Vxf.n*d)*options.tol_mat_bias);
 else
    % Nadia's changes: Bound Trace of Eigenvalues
-    scalar = d^3;
     for k = 0:L
         lambda = eig(Vxf.P(:,:,k+1) + Vxf.P(:,:,k+1)')/2;
         c(k*d+1:(k+1)*d) = -lambda + options.tol_mat_bias;        
+
         if options.upperBoundEigenValue
-            if (k == 0)
-                if L == 0
-                    ceq(k+1) = scalar - sum(lambda);
-                else
-                    ceq(k+1) = (scalar*2*L) - sum(lambda); % + Vxf.P(:,:,k+1)'
-                    %                 ceq(k+1) = scalar - sum(lambda); % + Vxf.P(:,:,k+1)'
-                end
+            if k == 0
+                ceq(k+1) = tr_g - sum(lambda); % + Vxf.P(:,:,k+1)'
             else
-                ceq(k+1) = scalar - sum(lambda); % + Vxf.P(:,:,k+1)'
-                %                 ceq(k+1) = scalar - sum(lambda); % + Vxf.P(:,:,k+1)'
+                ceq(k+1) = ceil(tr_g/(L-2)) - sum(lambda); % + Vxf.P(:,:,k+1)'
             end
         end
     end
