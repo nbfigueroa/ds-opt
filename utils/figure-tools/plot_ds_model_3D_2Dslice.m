@@ -26,8 +26,6 @@ d3_tmp = zeros(size(d1_tmp));
 d1_vec = d1_tmp(:);
 d2_vec = d2_tmp(:);
 
-dimensions
-
 x = repmat(attractor,[1 length(d1_vec)]);
 
 if dimensions(1) == 1

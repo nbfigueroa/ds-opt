@@ -40,8 +40,8 @@ close all; clear all; clc
 % 10: CShape all            (3D) -- 20 trajectories recorded at 100Hz
 % 11: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-pkg_dir         = '/home/nbfigueroa/Dropbox/PhD_papers/CoRL-2018/code/ds-opt/';
-chosen_dataset  = 10; 
+pkg_dir         = pwd;
+chosen_dataset  = 7; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 4; % Only for real 3D data
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
@@ -55,12 +55,6 @@ limits = axis;
 M          = size(Data,1)/2;    
 Xi_ref     = Data_sh(1:M,:);
 Xi_dot_ref = Data_sh(M+1:end,:);     
-
-%% %%%%%%%%%%%% [Optional] Load pre-learned SEDS model from Mat file  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-CShape-bottom/3D-CShape-bottom_seds';
-matfile = strcat(pkg_dir,'/models/', DS_name,'.mat');
-load(matfile)
-ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:M,M+1:2*M);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 1 - OPTION 2 (DATA LOADING): Load Motions from LASA Handwriting Dataset %%
@@ -88,12 +82,12 @@ Xi_dot_ref = Data_sh(M+1:end,:);
 % 'seds-init': follows the initialization given in the SEDS code
 % 0: Manually set the # of Gaussians
 % 1: Do Model Selection with BIC
-do_ms_bic = 0;
+do_ms_bic = 1;
 
 if do_ms_bic
     est_options = [];
     est_options.type        = 1;   % GMM Estimation Alorithm Type
-    est_options.maxK        = 15;  % Maximum Gaussians for Type 1/2
+    est_options.maxK        = 10;  % Maximum Gaussians for Type 1/2
     est_options.do_plots    = 1;   % Plot Estimation Statistics
     est_options.fixed_K     = [];   % Fix K and estimate with EM
     est_options.sub_sample  = 1;   % Size of sub-sampling of trajectories 
@@ -127,8 +121,8 @@ options.display       = 1;        % An option to control whether the algorithm
                                   % displays the output of each iterations [default: true]                            
 options.tol_stopping  = 10^-6;    % A small positive scalar defining the stoppping
                                   % tolerance for the optimization solver [default: 10^-10]
-options.max_iter      = 1000;     % Maximum number of iteration forthe solver [default: i_max=1000]
-options.objective     = 'likelihood'; % 'mse'/'likelihood'
+options.max_iter      = 500;      % Maximum number of iteration forthe solver [default: i_max=1000]
+options.objective     = 'mse';    % 'mse'/'likelihood'
 sub_sample            = 1;
 
 %running SEDS optimization solver
@@ -140,7 +134,7 @@ ds_seds = @(x) GMR_SEDS(Priors,Mu,Sigma,x-repmat(att,[1 size(x,2)]),1:M,M+1:2*M)
 ds_plot_options = [];
 ds_plot_options.sim_traj  = 1;            % To simulate trajectories from x0_all
 ds_plot_options.x0_all    = x0_all;       % Intial Points
-ds_plot_options.init_type = 'ellipsoid';       % For 3D DS, to initialize streamlines
+ds_plot_options.init_type = 'ellipsoid';  % For 3D DS, to initialize streamlines
                                           % 'ellipsoid' or 'cube'  
 ds_plot_options.nb_points = 30;           % No of streamlines to plot (3D)
 ds_plot_options.plot_vol  = 1;            % Plot volume of initial points (3D)
@@ -153,14 +147,6 @@ switch options.objective
     case 'likelihood'
         title('SEDS Dynamics with $J(\theta_{\gamma})$= log-Likelihood', 'Interpreter','LaTex','FontSize',20)
 end
-
-%% %%%%%%%%%%%%   Export SEDS model parameters to Mat/Yaml files  %%%%%%%%%%%%%%%%%%%
-DS_name = '3D-pick-box_seds-24';
-save_seDS_to_Mat(DS_name, pkg_dir, Priors0, Mu0, Sigma0, Priors, Mu, Sigma, att, x0_all, dt, options,est_options)
-
-% To use the rest of the code you need a matlab yaml convertor
-% you can get it from here: http://vision.is.tohoku.ac.jp/~kyamagu/software/yaml/
-save_seDS_to_Yaml(DS_name, pkg_dir, Priors, Mu, Sigma, att, x0_all, dt)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   Step 4 (Evaluation): Compute Metrics and Visualize Velocities %%

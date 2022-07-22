@@ -43,27 +43,28 @@ b_c = zeros(M,K);
 switch ctr_type
     case 0
         % 'sedumi': semidefinite programming solver for convex problems
-        sdp_options = sdpsettings('solver','sedumi','verbose', 1);
-    
+        sdp_options = sdpsettings('solver','sedumi','verbose', 1, 'debug', 1);
+        symm_constr = 0;
+
     case 1
         % 'penlab': Nonlinear semidefinite programming solver
-        sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1);
+        sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1, 'debug', 1);
         P_var = sdpvar(M, M, 'symmetric','real');
         Constraints = [Constraints, P_var >  eye(M,M)];
         assign(P_var,eye(M));
-        init_cvx = varargin{2};
-        
     case 2
         % 'penlab': Nonlinear semidefinite programming solver
-        sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1);
-        P = varargin{1};
-        init_cvx = varargin{2};
+        sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1, 'debug', 1);
 end
+
+P = varargin{1};
+init_cvx    = varargin{2};
+symm_constr = varargin{3};
 
 if init_cvx
     % Solve Problem with Convex constraints first to get A's
     fprintf('Solving Optimization Problem with Convex Constraints for Non-Convex Initialization...\n');
-    [A0, b0] = optimize_lpv_ds_from_data(Data, attractor, 0, gmm);
+    [A0, b0] = optimize_lpv_ds_from_data(Data, attractor, 0, gmm, eye(M), 0, symm_constr);
 end
 
 % Posterior Probabilities per local model
@@ -71,7 +72,18 @@ h_k = posterior_probs_gmm(Xi_ref,gmm,'norm');
 
 % Define Constraints and Assign Initial Values
 for k = 1:K    
-    A_vars{k} = sdpvar(M, M, 'full','real');       
+    if symm_constr
+        A_vars{k} = sdpvar(M, M,'symmetric','real');
+    else
+        A_vars{k} = sdpvar(M, M, 'full','real');
+    end
+
+    % Override, if k=1 always make symmetric to have a linear motion
+    % towards the attractor at the end
+    if k == 1
+        A_vars{k} = sdpvar(M, M,'symmetric','real');
+    end
+
     b_vars{k} = sdpvar(M, 1, 'full');
     Q_vars{k} = sdpvar(M, M,'symmetric','real');       
        

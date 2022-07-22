@@ -1,8 +1,12 @@
 function [hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_fun, ds_plot_options)
-fig1 = figure('Color',[1 1 1]);
+
+if isfield(ds_plot_options,'fig_handle')
+    fig1 = ds_plot_options.fig_handle;
+else
+    fig1 = figure('Color',[1 1 1]);
+end
+
 M = size(Xi_ref,1);
-
-
 
 % Parse Options
 plot_repr   = ds_plot_options.sim_traj;
@@ -26,13 +30,11 @@ end
 % Simulate trajectories and plot them on top
 if plot_repr
     opt_sim = [];
-%     opt_sim.dt = 0.01;
-    opt_sim.dt = 0.02;
-%     opt_sim.i_max = 5000;
+    opt_sim.dt    = 0.005;   
     opt_sim.i_max = 10000;
-    opt_sim.tol = 0.005;
-    opt_sim.plot = 0;
-    [x_sim, ~] = Simulation(x0_all ,[],ds_fun, opt_sim);
+    opt_sim.tol   = 0.005;
+    opt_sim.plot  = 0;
+    [x_sim, ~]    = Simulation(x0_all ,[],ds_fun, opt_sim);
 else
     x_sim = [];
     hr = [];
@@ -51,8 +53,8 @@ if M == 2
     axis(limits_)
     box on
     grid on
-    xlabel('$\xi_1$','Interpreter','LaTex','FontSize',20);
-    ylabel('$\xi_2$','Interpreter','LaTex','FontSize',20);
+    xlabel('$x_1$','Interpreter','LaTex','FontSize',30);
+    ylabel('$x_2$','Interpreter','LaTex','FontSize',30);
     
     % Plot simulated trajectories
     if plot_repr
@@ -67,10 +69,11 @@ elseif M == 3
         % Plot Demonstrations in red
         [hd] = scatter(Xi_ref_2d(1,:),Xi_ref_2d(2,:),10,[1 0 0],'filled'); hold on
         if isfield(ds_plot_options,'limits')
-            limits_ = ds_plot_options.limits;
+            limits_ = ds_plot_options.limits; 
         else
             limits = axis;
             limits_ = limits + [-0.015 0.015 -0.015 0.015];
+            limits_(end) = limits_(end) + 0.15;
         end
         
         % Plot Streamlines of 2D slice in blue
@@ -87,16 +90,24 @@ elseif M == 3
         end
         
     else
-        % Plot Demonstrations in red
-        [hd] = plot3(Xi_ref(1,:),Xi_ref(2,:),Xi_ref(3,:),'r.','markersize',10); hold on;
-        
+
+        if isfield(ds_plot_options,'limits')
+            limits = ds_plot_options.limits;
+            hd = [];
+        else
+           % Plot Demonstrations in red
+           [hd] = plot3(Xi_ref(1,:),Xi_ref(2,:),Xi_ref(3,:),'r.','markersize',10); hold on;
+           limits = axis;
+        end
         
         % Compute Start Locations for Streamlines
+        if isfield(ds_plot_options,'sample_points')
+            x0_all = [x0_all ds_plot_options.sample_points];
+        end
         start_pnts =  sample_initial_points(x0_all, nb_pnts, init_type, plot_volume);
-        limits = axis;
-        
+      
         % Plot Streamlines in blue
-        [hs] = plot_ds_model_3D(fig1, ds_fun, [0;0;0], limits, start_pnts, 'low'); hold on;
+        [hs] = plot_ds_model_3D(fig1, ds_fun, [0;0;0],limits, start_pnts, 'low'); hold on;
         
         % Simulate trajectories and plot them on top
         if plot_repr

@@ -8,6 +8,8 @@ init_points = zeros(M, nb_points);
 
 % Estimate point distribution
 [ V, D, init_mu ] = my_pca( x0_all );
+D(1,1) = 1.5*D(1,1); %Extend the smallest dim
+D(3,3) = 5*D(3,3); %Extend the smallest dim
 
 switch type
     case 'cube'        
@@ -17,9 +19,9 @@ switch type
         
         % Find ranges of aligned points
         Ymin_values   = min(y0_all,[],2);
-        Ymin_values = Ymin_values + [0; 0.25*Ymin_values(2); 0.25*Ymin_values(3)];
+        Ymin_values = Ymin_values + [0; 0.5*Ymin_values(2); 0.5*Ymin_values(3)];
         Yrange_values = range(y0_all,2);               
-        Yrange_values = Yrange_values + [0; 0.25*Yrange_values(2); 0.25*Yrange_values(3)];
+        Yrange_values = Yrange_values + [0; 0.5*Yrange_values(2); 0.5*Yrange_values(3)];
         
         % Uniformly sample points within the ranges
         init_points_y = Ymin_values(:,ones(1,nb_points)) + rand(nb_points,M)'.*(Yrange_values(:, ones(1,nb_points)));
@@ -34,7 +36,7 @@ switch type
         end
         
     case 'ellipsoid'
-        D_mod = ((D + 1e-3*eye(M))*diag([3,3,3]));
+        D_mod = ((D + 1e-2*eye(M))*diag([5,5,5]));
         init_sigma = V*D_mod*V';
         init_points  = draw_from_ellipsoid(init_sigma, init_mu, nb_points);
         

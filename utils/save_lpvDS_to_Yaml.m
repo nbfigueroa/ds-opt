@@ -1,4 +1,4 @@
-function save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, dt)
+function save_lpvDS_to_Yaml(DS_name, pkg_dir,  ds_gmm, A_k, att, x0_all, att_all, dt, ds_id)
 
 % GMM parameters
 K          = length(ds_gmm.Priors);
@@ -12,6 +12,7 @@ A_vec      = A_k(1:end);
 
 % Initial points (to simulate)
 x0_all_vec = x0_all(1:end);
+att_all_vec = att_all(1:end);
 
 % Create structure to dump in yaml file
 lpvDS_model =[];
@@ -24,7 +25,9 @@ lpvDS_model.Sigma        = Sigma_vec;
 lpvDS_model.A            = A_vec;
 lpvDS_model.attractor    = att(1:end);
 lpvDS_model.x0_all       = x0_all_vec;
+lpvDS_model.att_all      = att_all_vec;
 lpvDS_model.dt           = dt;
+lpvDS_model.ds_id        = ds_id;
 
 % Visualize what will be dumped on yaml file
 lpvDS_dump = YAML.dump(lpvDS_model);
@@ -33,6 +36,6 @@ yamlfile = strcat(pkg_dir,'/models/', lpvDS_model.name,'.yml');
 % Save yaml file
 fprintf('The following parameters were saved in: %s \n', yamlfile);
 disp(lpvDS_dump);
-YAML.write(yamlfile,lpvDS_model)
+YAML.write(yamlfile,lpvDS_model);
 
 end
