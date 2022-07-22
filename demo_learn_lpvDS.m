@@ -41,7 +41,7 @@ close all; clear all; clc
 % 10: CShape all            (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = pwd;
-chosen_dataset  = 4; 
+chosen_dataset  = 3; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 4; % Only for real 3D data
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
@@ -165,7 +165,6 @@ end
 %%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%%% 
 % Type of constraints/optimization 
 lyap_constr = 2;      % 0:'convex':     A' + A < 0 (Proposed in paper)
-                      % 1:'non-convex': A'P + PA < 0 (Sina's Thesis approach - not suitable for 3D)
                       % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
 init_cvx    = 1;      % 0/1: initialize non-cvx problem with cvx 
 symm_constr = 0;      % This forces all A's to be symmetric (good for simple reaching motions)
@@ -190,7 +189,7 @@ else
     [A_k, b_k, ~] = optimize_lpv_ds_from_data(Data, att, lyap_constr, ds_gmm, P_opt, init_cvx, symm_constr);
     ds_lpv = @(x) lpv_ds(x, ds_gmm, A_k, b_k);
 end
-
+delete penm_log.txt
 %% %%%%%%%%%%%%    Plot Resulting DS  %%%%%%%%%%%%%%%%%%%
 % Fill in plotting options
 ds_plot_options = [];
@@ -204,7 +203,7 @@ ds_plot_options.limits    = axis_limits;
 
 [hd, hs, hr, x_sim] = visualizeEstimatedDS(Xi_ref, ds_lpv, ds_plot_options);
 limits = axis;
-switch constr_type
+switch lyap_constr
     case 0
         title('GMM-based LPV-DS with QLF', 'Interpreter','LaTex','FontSize',20)
     case 1
@@ -215,7 +214,7 @@ end
 
 % %% %%%%%%%%%%%%   Export DS parameters to Mat/Txt/Yaml files  %%%%%%%%%%%%%%%%%%%
 % DS_name = '2d-U-Nav';
-% save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, constr_type, est_options)
+% save_lpvDS_to_Mat(DS_name, pkg_dir, ds_gmm, A_k, b_k, att, x0_all, dt, P_est, lyap_constr, est_options)
 % 
 % %% Save LPV-DS parameters to text files
 % DS_name = '3D-CShape-top-pqlf-2';
@@ -233,11 +232,11 @@ end
 %% Compute Errors
 % Compute RMSE on training data
 rmse = mean(rmse_error(ds_lpv, Xi_ref, Xi_dot_ref));
-fprintf('LPV-DS with (O%d), got prediction RMSE on training set: %d \n', constr_type+1, rmse);
+fprintf('LPV-DS with (O%d), got prediction RMSE on training set: %d \n', lyap_constr+1, rmse);
 
 % Compute e_dot on training data
 edot = mean(edot_error(ds_lpv, Xi_ref, Xi_dot_ref));
-fprintf('LPV-DS with (O%d), got e_dot on training set: %d \n', constr_type+1, edot);
+fprintf('LPV-DS with (O%d), got e_dot on training set: %d \n', lyap_constr+1, edot);
 
 % Compute DTWD between train trajectories and reproductions
 if ds_plot_options.sim_traj
@@ -278,7 +277,7 @@ end
 contour = 1; % 0: surf, 1: contour
 clear lyap_fun_comb lyap_der 
 
-switch constr_type
+switch lyap_constr
     case 0 
         P = eye(2);
         title_string = {'$V(\xi) = (\xi-\xi^*)^T(\xi-\xi^*)$'};

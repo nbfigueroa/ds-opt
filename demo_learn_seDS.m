@@ -41,7 +41,7 @@ close all; clear all; clc
 % 11: Bumpy Surface         (3D) -- x trajectories recorded at 100Hz
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg_dir         = pwd;
-chosen_dataset  = 7; 
+chosen_dataset  = 3; 
 sub_sample      = 1; % '>2' for real 3D Datasets, '1' for 2D toy datasets
 nb_trajectories = 4; % Only for real 3D data
 [Data, Data_sh, att, x0_all, data, dt] = load_dataset_DS(pkg_dir, chosen_dataset, sub_sample, nb_trajectories);
@@ -59,22 +59,23 @@ Xi_dot_ref = Data_sh(M+1:end,:);
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 1 - OPTION 2 (DATA LOADING): Load Motions from LASA Handwriting Dataset %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% UNCOMMENT BLOCK IF YOU WANT TO USE DATA FROM LASA HANDWRITING DATASET
 % Choose DS LASA Dataset to load
-clear all; close all; clc
-
-% Select one of the motions from the LASA Handwriting Dataset
-sub_sample      = 2; % Each trajectory has 1000 samples when set to '1'
-nb_trajectories = 7; % Maximum 7, will select randomly if <7
-[Data, Data_sh, att, x0_all, ~, dt] = load_LASA_dataset_DS(sub_sample, nb_trajectories);
-
-% Position/Velocity Trajectories
-vel_samples = 15; vel_size = 0.5; 
-[h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
-
-% Extract Position and Velocities
-M          = size(Data,1)/2;    
-Xi_ref     = Data_sh(1:M,:);
-Xi_dot_ref = Data_sh(M+1:end,:);  
+% clear all; close all; clc
+% 
+% % Select one of the motions from the LASA Handwriting Dataset
+% sub_sample      = 2; % Each trajectory has 1000 samples when set to '1'
+% nb_trajectories = 7; % Maximum 7, will select randomly if <7
+% [Data, Data_sh, att, x0_all, ~, dt] = load_LASA_dataset_DS(sub_sample, nb_trajectories);
+% 
+% % Position/Velocity Trajectories
+% vel_samples = 15; vel_size = 0.5; 
+% [h_data, h_att, h_vel] = plot_reference_trajectories_DS(Data, att, vel_samples, vel_size);
+% 
+% % Extract Position and Velocities
+% M          = size(Data,1)/2;    
+% Xi_ref     = Data_sh(1:M,:);
+% Xi_dot_ref = Data_sh(M+1:end,:);  
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Step 2 (GMM FITTING): Fit GMM to Trajectory Data %%
