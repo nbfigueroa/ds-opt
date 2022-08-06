@@ -27,108 +27,108 @@
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  DATA LOADING OPTION 1: Draw with GUI %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Clear all Data
-close all; clear all; clc;
+% % Clear all Data
+% close all; clear all; clc;
 %% Draw batches of data
-fig1 = figure('Color',[1 1 1]);
-limits = [-6 6 -2 0.5];
-axis(limits)
-set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.55, 0.2646 0.4358]);
-grid on
-
-% Global Attractor of DS
-att_g = [0 0]';
-radius_fun = @(x)(1 - my_exp_loc_act(5, att_g, x));
-scatter(att_g(1),att_g(2),100,[0 0 0],'d'); hold on;
-
-% Draw Reference Trajectories
-data = draw_mouse_data_on_DS(fig1, limits);
-Data = []; x0_all = [];
-for l=1:length(data)    
-    % Check where demos end and shift
-    data_ = data{l};
-    data_(1:2,:) = data_(1:2,:) - repmat(data_(1:2,end), [1 length(data_)]);
-    data_(3:4,end) = zeros(2,1);
-    Data = [Data data_];
-    x0_all = [x0_all data_(1:2,1)];
-end
-
-% Position/Velocity Trajectories
-Xi_ref     = Data(1:2,:);
-Xi_dot_ref = Data(3:end,:);
-
-%% Store as first batch
-Data_1 = Data;
-x0_all_1 = x0_all;
-Xi_ref_1 = Xi_ref;
-Xi_dot_ref_1 = Xi_dot_ref;
-
-%% Store as second batch
-Data_2 = Data;
-x0_all_2 = x0_all;
-Xi_ref_2 = Xi_ref;
-Xi_dot_ref_2 = Xi_dot_ref;
+% fig1 = figure('Color',[1 1 1]);
+% limits = [-6 6 -2 0.5];
+% axis(limits)
+% set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.25, 0.55, 0.2646 0.4358]);
+% grid on
+% 
+% % Global Attractor of DS
+% att_g = [0 0]';
+% radius_fun = @(x)(1 - my_exp_loc_act(5, att_g, x));
+% scatter(att_g(1),att_g(2),100,[0 0 0],'d'); hold on;
+% 
+% % Draw Reference Trajectories
+% data = draw_mouse_data_on_DS(fig1, limits);
+% Data = []; x0_all = [];
+% for l=1:length(data)    
+%     % Check where demos end and shift
+%     data_ = data{l};
+%     data_(1:2,:) = data_(1:2,:) - repmat(data_(1:2,end), [1 length(data_)]);
+%     data_(3:4,end) = zeros(2,1);
+%     Data = [Data data_];
+%     x0_all = [x0_all data_(1:2,1)];
+% end
+% 
+% % Position/Velocity Trajectories
+% Xi_ref     = Data(1:2,:);
+% Xi_dot_ref = Data(3:end,:);
+% 
+% %% Store as first batch
+% Data_1 = Data;
+% x0_all_1 = x0_all;
+% Xi_ref_1 = Xi_ref;
+% Xi_dot_ref_1 = Xi_dot_ref;
+% 
+% %% Store as second batch
+% Data_2 = Data;
+% x0_all_2 = x0_all;
+% Xi_ref_2 = Xi_ref;
+% Xi_dot_ref_2 = Xi_dot_ref;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  DATA LOADING OPTION 2: Choose from LASA DATASET %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Choose DS LASA Dataset to load
-% clear all; close all; clc
-
-% Global Attractor of DS
-att_g = [0 0]';
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  Load Chosen Dataset %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Multi-Models are Motions 27-28-29-30...
-m = 28;
-sample = 2;
-show_trajectories = 1;
-[demos, name] = load_LASA_dataset_shape(m);
-
-% Global Attractor of DS
-att_g = [0 0]';
-
-% Extracting data for model 1
-Data_1 = []; x0_all_1 = [];
-for l=5:7
-    % Check where demos end and shift
-    data_ = [demos{l}.pos(:,1:sample:end); demos{l}.vel(:,1:sample:end);];
-    Data_1 = [Data_1 data_];
-    x0_all_1 = [x0_all_1 data_(1:2,20)];
-    clear data_
-end
-
-% Position/Velocity Trajectories
-Xi_ref_1     = Data_1(1:2,:);
-Xi_dot_ref_1 = Data_1(3:end,:);
-
-
-% Extracting data for model 2
-Data_2 = []; x0_all_2 = [];
-for l=1:4
-    % Check where demos end and shift
-    data_ = [demos{l}.pos(:,1:sample:end); demos{l}.vel(:,1:sample:end);];
-    Data_2 = [Data_2 data_];
-    x0_all_2 = [x0_all_2 data_(1:2,20)];
-    clear data_
-end
-
-% Position/Velocity Trajectories
-Xi_ref_2     = Data_2(1:2,:);
-Xi_dot_ref_2 = Data_2(3:end,:);
+% % Choose DS LASA Dataset to load
+% % clear all; close all; clc
+% 
+% % Global Attractor of DS
+% att_g = [0 0]';
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%
+% %  Load Chosen Dataset %%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Multi-Models are Motions 27-28-29-30...
+% m = 28;
+% sample = 2;
+% show_trajectories = 1;
+% [demos, name] = load_LASA_dataset_shape(m);
+% 
+% % Global Attractor of DS
+% att_g = [0 0]';
+% 
+% % Extracting data for model 1
+% Data_1 = []; x0_all_1 = [];
+% for l=5:7
+%     % Check where demos end and shift
+%     data_ = [demos{l}.pos(:,1:sample:end); demos{l}.vel(:,1:sample:end);];
+%     Data_1 = [Data_1 data_];
+%     x0_all_1 = [x0_all_1 data_(1:2,20)];
+%     clear data_
+% end
+% 
+% % Position/Velocity Trajectories
+% Xi_ref_1     = Data_1(1:2,:);
+% Xi_dot_ref_1 = Data_1(3:end,:);
+% 
+% 
+% % Extracting data for model 2
+% Data_2 = []; x0_all_2 = [];
+% for l=1:4
+%     % Check where demos end and shift
+%     data_ = [demos{l}.pos(:,1:sample:end); demos{l}.vel(:,1:sample:end);];
+%     Data_2 = [Data_2 data_];
+%     x0_all_2 = [x0_all_2 data_(1:2,20)];
+%     clear data_
+% end
+% 
+% % Position/Velocity Trajectories
+% Xi_ref_2     = Data_2(1:2,:);
+% Xi_dot_ref_2 = Data_2(3:end,:);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  DATA LOADING OPTION 3: Load from Pre-drawn Examples %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example Figure. 6
 clear all; close all; clc
-load('./datasets/CoRL-paper-Datasets/incremental_1.mat')
+load('./datasets/2D_incremental_1.mat')
 
 % Example Figure. 7
-clear all; close all; clc
-load('./datasets/CoRL-paper-Datasets/incremental_2.mat')
+% clear all; close all; clc
+% load('./datasets/2D_incremental_2.mat')
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -161,14 +161,14 @@ end
 gmm_type = 0;
 %%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%
 % Type of constraints/optimization 
-constr_type = 0;      % 0:'convex':     A' + A < 0
-                      % 1:'non-convex': A'P + PA < 0
-                      % 2:'non-convex': A'P + PA < -Q given P                                  
-init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx                
+lyap_constr = 0;      % 0:'convex':     A' + A < 0 (Proposed in paper)
+                      % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
+init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx 
+symm_constr = 0;      % This forces all A's to be symmetric (good for simple reaching motions)             
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Learn model for batch 1
-[ds_gmm_1, A_g_1, b_g_1, P_est_1] = learn_LPVDS(gmm_type,constr_type, init_cvx, Data_1, att_g, limits);
+[ds_gmm_1, A_g_1, b_g_1] = learn_LPVDS(Data_1, att_g, lyap_constr, gmm_type, init_cvx, symm_constr);
 
 % Add number of points used to estimate this GMM
 ds_gmm_1.N = size(Data_1,2);
@@ -206,52 +206,36 @@ title('Initial batch $\theta_{\gamma}^b$ and $\mathbf{f}(\xi)^b$', 'Interpreter'
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%  Step 3: Learn CP-GMM for batch 2 %%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% GMM Estimation Algorithm %%%%
+
+%%%%%%%%%%%%%%%%%%% GMM Estimation Algorithm %%%%%%%%%%%%%%%%%%%
 % 0: Physically-Consistent Non-Parametric (Collapsed Gibbs Sampler)
 % 1: GMM-EM Model Selection via BIC
-% 2: GMM via Competitive-EM - rarely works..
+% 2: GMM via Competitive-EM
 % 3: CRP-GMM via Collapsed Gibbs Sampler
+gmm_type = 0;
+%%%%%%%%%%%%%%%%%%% DS OPTIMIZATION OPTIONS %%%%%%%%%%%%%%%%%%%%%% 
+% Type of constraints/optimization 
+lyap_constr = 0;      % 0:'convex':     A' + A < 0 (Proposed in paper)
+                      % 2:'non-convex': A'P + PA < -Q given P (Proposed in paper)                                 
+init_cvx    = 0;      % 0/1: initialize non-cvx problem with cvx 
+symm_constr = 0;      % This forces all A's to be symmetric (good for simple reaching motions)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-est_options = [];
-est_options.type        = gmm_type; % GMM Estimation Alorithm Type    
-est_options.maxK        = 15;       % Maximum Gaussians for Type 1/2
-est_options.do_plots    = 1;        % Plot Estimation Statistics
-est_options.adjusts_C   = 1;        % Adjust Sigmas
-est_options.fixed_K     = 5;        % Fix K and estimate with EM
-est_options.exp_scaling = 1;        % Scaling for the similarity to improve locality
+% Learn model for batch 2
+[ds_gmm_2, ~, ~] = learn_LPVDS(Data_2, att_g, lyap_constr, gmm_type, init_cvx, symm_constr);
 
-% Discover Local Models
-sample = 2;
-[Priors0, Mu0, Sigma0] = discover_local_models(Xi_ref_2(:,1:sample:end), Xi_dot_ref_2(:,1:sample:end), est_options);
-
-%% Extract Cluster Labels
-est_K_2      = length(Priors0); 
-Priors_2 = Priors0; Mu_2 = Mu0; Sigma_2 = Sigma0;
-[~, est_labels_2] =  my_gmm_cluster(Xi_ref_2, Priors_2, Mu_2, Sigma_2, 'hard', []);
-clear ds_gmm_2; 
-ds_gmm_2.Mu = Mu_2; ds_gmm_2.Sigma = Sigma_2; 
-ds_gmm_2.Priors = Priors_2; 
-% Adjust Covariance Matrices
-if est_options.adjusts_C  == 1
-    tot_scale_fact = 1; rel_scale_fact = 0.15;
-    Sigma = adjust_Covariances(Sigma0, tot_scale_fact, rel_scale_fact);
-    ds_gmm_2.Sigma = Sigma;
-end  
-% Add number of points used to estimate this GMM
+% Add number of points used to estimate this GMM\
 ds_gmm_2.N = size(Data_2,2);
 
-% Visualize Cluster Parameters on Manifold Data
-plotGMMParameters( Xi_ref_2, est_labels_2, Mu_2, Sigma_2);
-limits_ = limits + [-0.015 0.015 -0.015 0.015];
-axis(limits_)
-title('Batch $b+1$ $\mathcal{PC}-$GMM $\theta_{\gamma}^{b+1}$','Interpreter','LaTex','FontSize',20)
-ml_plot_gmm_pdf(Xi_ref, Priors_2, Mu_2, Sigma_2, limits)
-
+% Extract Cluster Labels
+[~, est_labels_2] =  my_gmm_cluster(Xi_ref_2, ds_gmm_2.Priors, ds_gmm_2.Mu, ds_gmm_2.Sigma, 'hard', []);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%  Step 4: Check for GMM Similarities of batch 2 wrt. batch 1 %%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 est_K_1 = length(ds_gmm_1.Priors);
+est_K_2 = length(ds_gmm_2.Priors);
+
 clc;
 prune_components = [];
 for k=1:est_K_2
@@ -289,17 +273,18 @@ end
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% %%%%%%%%  Step 4: Prune-Merge/Concatenate GMMs and Estimate DS parameters %%%%%%%%%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+P_opt = eye(size(Data,1)/2);
 if isempty(prune_components)
     fprintf(2,'*** No Pruning Necessary! Merging GMM components of both batches! ***\n');
     merged_ds_gmm = mergeGMMs(ds_gmm_1, ds_gmm_2);
     %%%%%%%%  LPV system sum_{k=1}^{K}\gamma_k(xi)(A_kxi + b_k) %%%%%%%%            
-    [A_g_2, b_g_2, ~] = optimize_lpv_ds_from_data(Data_2, att_g, 0, ds_gmm_2, [], 0);          
+    [A_g_2, b_g_2, ~] = optimize_lpv_ds_from_data(Data_2, att_g, 0, ds_gmm_2, P_opt, init_cvx, symm_constr);          
     
 else
     fprintf(2,'*** Need to prune components from batch b+1! ***\n');    
     % Before pruning.. estimate DS parameters
     %%%%%%%%  LPV system sum_{k=1}^{K}\gamma_k(xi)(A_kxi + b_k) %%%%%%%%            
-    [A_g_2_, b_g_2_, ~] = optimize_lpv_ds_from_data(Data_2, att_g, 0, ds_gmm_2, [], 0);           
+    [A_g_2_, b_g_2_, ~] = optimize_lpv_ds_from_data(Data_2, att_g, 0, ds_gmm_2, P_opt, init_cvx, symm_constr);           
        
     remove_batch_2 = prune_components(:,1);
     update_batch_1 = prune_components(:,2);    
@@ -386,13 +371,13 @@ b_merged(:,1:est_K_1)     = b_g_1;
 b_merged(:,est_K_1+1:end) = b_g_2;
 
 % Create DS function handle
-ds_lpv_merged = @(x) lpv_ds(x, new_ds_gmm, A_new, b_new);
+ds_lpv_merged = @(x) lpv_ds(x, merged_ds_gmm, A_merged, b_merged);
 
 %% %%%%%%%%%%%%    Plot Resulting Merged DS  %%%%%%%%%%%%%%%%%%
 fig1 = figure('Color',[1 1 1]);
 [hd] = scatter(Xi_ref_1(1,:),Xi_ref_1(2,:),20,[1 0 0],'filled'); hold on
 [hd] = scatter(Xi_ref_2(1,:),Xi_ref_2(2,:),20,[1 0 1],'filled'); hold on
-[hs] = plot_ds_model(fig1, ds_lpv_2, att_g, limits,'medium'); hold on;
+[hs] = plot_ds_model(fig1, ds_lpv_merged, att_g, limits,'medium'); hold on;
 limits_ = limits + [-0.015 0.015 -0.015 0.015];
 axis(limits_)
 box on
