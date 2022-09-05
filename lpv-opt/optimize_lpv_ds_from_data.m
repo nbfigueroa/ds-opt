@@ -54,7 +54,8 @@ switch ctr_type
         assign(P_var,eye(M));
     case 2
         % 'penlab': Nonlinear semidefinite programming solver
-        sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1, 'debug', 1);
+%         sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1, 'debug', 1);
+        sdp_options = sdpsettings('solver','sedumi','verbose', 1, 'debug', 1);
 end
 
 P = varargin{1};
