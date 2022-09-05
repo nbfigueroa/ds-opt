@@ -56,6 +56,7 @@ switch ctr_type
         % 'penlab': Nonlinear semidefinite programming solver
 %         sdp_options = sdpsettings('solver','penlab','verbose', 1,'usex0',1, 'debug', 1);
         sdp_options = sdpsettings('solver','sedumi','verbose', 1, 'debug', 1);
+        %% Testing git submodule fetch
 end
 
 P = varargin{1};
